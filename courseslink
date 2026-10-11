@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoursesLink - Plataforma de Cursos e Trilhas de Aprendizado</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            800: '#102a43',
+                            900: '#0b1b2b',
+                            950: '#060e18'
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        heading: ['Sora', 'Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Sora:wght@400;600;700;800&display=swap');
+    </style>
+</head>
+<body class="h-full bg-slate-900 text-slate-100 antialiased flex flex-col justify-between font-sans">
+
+    <div id="app" class="min-h-full flex flex-col">
+        
+        <!-- Navbar -->
+        <header id="navbar" class="bg-navy-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateToHome()">
+                    <div class="bg-gradient-to-tr from-amber-500 to-amber-300 text-navy-950 p-2.5 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/10 font-black">
+                        <i data-lucide="link" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight text-white block leading-none font-heading">COURSESLINK</span>
+                        <span class="text-[10px] uppercase font-semibold text-amber-400 tracking-wider">Conectando Conhecimento</span>
+                    </div>
+                </div>
+                
+                <!-- Nav Action Buttons -->
+                <div class="flex items-center space-x-4">
+                    <div id="user-badge" class="hidden sm:flex items-center space-x-2 bg-slate-800/80 border border-slate-700/60 px-3.5 py-1.5 rounded-full text-xs font-medium text-slate-200">
+                        <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
+                        <span id="nav-user-email">aluno@courseslink.com</span>
+                        <span id="nav-user-role" class="ml-1 px-2 py-0.5 text-[10px] rounded-full bg-amber-400/20 text-amber-300 uppercase font-bold border border-amber-400/30">Aluno</span>
+                    </div>
+
+                    <button id="nav-login-btn" onclick="openAuthModal('login')" class="bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold px-5 py-2.5 rounded-xl transition-all shadow-md text-xs uppercase tracking-wider">
+                        Entrar no Portal
+                    </button>
+
+                    <button id="nav-logout-btn" onclick="handleLogout()" class="hidden flex items-center space-x-1.5 text-slate-400 hover:text-rose-400 px-3 py-2 rounded-xl hover:bg-slate-800/60 transition-colors text-xs font-semibold">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Sair</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow flex flex-col">
+            
+            <!-- Loading Splash -->
+            <div id="loading-view" class="flex-grow flex items-center justify-center p-8 bg-navy-950">
+                <div class="text-center space-y-4">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-amber-400 border-t-transparent"></div>
+                    <p class="text-slate-400 font-medium text-sm">Carregando plataforma CoursesLink...</p>
+                </div>
+            </div>
+
+            <!-- Landing / Public Home View -->
+            <div id="landing-view" class="hidden flex-grow flex flex-col">
+                <!-- Hero Section -->
+                <section class="relative bg-gradient-to-b from-navy-900 via-navy-950 to-slate-900 border-b border-slate-800 py-20 lg:py-28 px-4 overflow-hidden">
+                    <div class="max-w-5xl mx-auto text-center space-y-8 relative z-10">
+                        <span class="inline-flex items-center space-x-2 bg-amber-400/10 border border-amber-400/30 text-amber-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">
+                            <i data-lucide="book-open-check" class="w-4 h-4"></i>
+                            <span>Aprender. Praticar. Avançar.</span>
+                        </span>
+                        
+                        <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight font-heading">
+                            Conectando você ao seu <span class="bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 bg-clip-text text-transparent">próximo nível.</span>
+                        </h1>
+
+                        <p class="text-slate-300 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
+                            O <strong>CoursesLink</strong> conecta alunos a cursos práticos e instrutores a novas turmas. Tudo em um ambiente digital interativo para potencializar seu aprendizado.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                            <button onclick="openAuthModal('register')" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold px-8 py-4 rounded-xl shadow-lg shadow-amber-500/20 transition-all text-sm uppercase tracking-wider flex items-center justify-center space-x-2">
+                                <span>Criar Conta no CoursesLink</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="scrollToSection('trilhas')" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-semibold px-8 py-4 rounded-xl transition-all text-sm">
+                                Conhecer Cursos Disponíveis
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Study Areas / Tracks Section -->
+                <section id="trilhas" class="py-20 px-4 max-w-7xl mx-auto w-full space-y-12">
+                    <div class="text-center space-y-3">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white font-heading">Encontre o caminho ideal para o seu objetivo</h2>
+                        <p class="text-slate-400 text-sm max-w-xl mx-auto">Explore as trilhas e cursos disponíveis na plataforma digital.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="public-courses-grid">
+                        <!-- Public course cards render here -->
+                    </div>
+                </section>
+
+                <!-- 3 Steps Section -->
+                <section class="bg-slate-900/60 border-y border-slate-800 py-16 px-4">
+                    <div class="max-w-6xl mx-auto">
+                        <div class="text-center mb-12">
+                            <h2 class="text-2xl font-bold text-white font-heading">Do primeiro acesso à próxima conquista</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="bg-navy-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 font-extrabold flex items-center justify-center border border-amber-400/20">1</div>
+                                <h3 class="text-lg font-bold text-white font-heading">Crie sua Conta</h3>
+                                <p class="text-slate-400 text-xs leading-relaxed">Cadastre-se na plataforma como Aluno para explorar matérias ou como Criador para publicar seus próprios treinamentos.</p>
+                            </div>
+                            <div class="bg-navy-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 font-extrabold flex items-center justify-center border border-amber-400/20">2</div>
+                                <h3 class="text-lg font-bold text-white font-heading">Escolha seu Curso</h3>
+                                <p class="text-slate-400 text-xs leading-relaxed">Navegue pelas áreas de tecnologia, concurso, negócios e idiomas, escolhendo as disciplinas do seu interesse.</p>
+                            </div>
+                            <div class="bg-navy-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 font-extrabold flex items-center justify-center border border-amber-400/20">3</div>
+                                <h3 class="text-lg font-bold text-white font-heading">Pratique e Evolua</h3>
+                                <p class="text-slate-400 text-xs leading-relaxed">Acesse o conteúdo exclusivo, faça simulações e acompanhe seu histórico de progresso em tempo real.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FAQ Section -->
+                <section class="py-16 px-4 max-w-4xl mx-auto w-full space-y-8">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-bold text-white font-heading">Perguntas Frequentes</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <details class="bg-navy-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300 cursor-pointer">
+                            <summary class="font-bold text-white">O que é o CoursesLink?</summary>
+                            <p class="mt-2 text-slate-400">É uma plataforma digital onde instrutores publicam treinamentos e alunos se maticulam para aprender novas habilidades.</p>
+                        </details>
+                        <details class="bg-navy-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300 cursor-pointer">
+                            <summary class="font-bold text-white">Posso criar meus próprios cursos?</summary>
+                            <p class="mt-2 text-slate-400">Sim! No momento do cadastro, escolha a opção "Criador" para gerenciar e publicar seus materiais no CoursesLink.</p>
+                        </details>
+                        <details class="bg-navy-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300 cursor-pointer">
+                            <summary class="font-bold text-white">Posso estudar pelo celular?</summary>
+                            <p class="mt-2 text-slate-400">Com certeza! A plataforma CoursesLink é 100% responsiva para celulares, tablets e computadores.</p>
+                        </details>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Student Dashboard View -->
+            <div id="student-dashboard" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Portal do Aluno</span>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-white mt-1 font-heading">Minha Área de Estudos</h1>
+                    </div>
+                    <!-- Student Tabs -->
+                    <div class="flex bg-slate-800/80 p-1.5 rounded-xl border border-slate-700/60 self-start">
+                        <button onclick="switchStudentTab('browse')" id="student-tab-browse" class="px-5 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all">Explorar Cursos</button>
+                        <button onclick="switchStudentTab('enrolled')" id="student-tab-enrolled" class="px-5 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Meus Cursos</button>
+                    </div>
+                </div>
+
+                <!-- Browse Section -->
+                <div id="student-browse-section" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="browse-courses-grid">
+                        <!-- Course Cards -->
+                    </div>
+                    <div id="browse-empty" class="text-center py-16 hidden bg-navy-900 rounded-2xl border border-slate-800">
+                        <i data-lucide="book-open" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
+                        <h3 class="text-lg font-bold text-white">Nenhum curso disponível</h3>
+                        <p class="text-xs text-slate-400 mt-1">Novos treinamentos serão publicados em breve por nossos instrutores.</p>
+                    </div>
+                </div>
+
+                <!-- Enrolled Section -->
+                <div id="student-enrolled-section" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="enrolled-courses-grid">
+                        <!-- Enrolled Courses -->
+                    </div>
+                    <div id="enrolled-empty" class="text-center py-16 hidden bg-navy-900 rounded-2xl border border-slate-800">
+                        <i data-lucide="award" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
+                        <h3 class="text-lg font-bold text-white">Você ainda não se matriculou</h3>
+                        <p class="text-xs text-slate-400 mt-1">Explore as trilhas na aba "Explorar Cursos" e comece hoje mesmo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Creator Dashboard View -->
+            <div id="creator-dashboard" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Painel do Instrutor</span>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-white mt-1 font-heading">Gestão de Cursos - CoursesLink</h1>
+                    </div>
+                    <button onclick="openCreateModal()" class="inline-flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold px-5 py-3 rounded-xl shadow-lg shadow-amber-500/10 transition-all text-xs uppercase tracking-wider">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Criar Novo Curso</span>
+                    </button>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    <div class="bg-navy-900 p-6 rounded-2xl border border-slate-800 flex items-center space-x-4">
+                        <div class="bg-amber-500/10 p-3.5 rounded-xl text-amber-400 border border-amber-400/20">
+                            <i data-lucide="video" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cursos Publicados</p>
+                            <h3 class="text-2xl font-black text-white mt-0.5" id="creator-courses-count">0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-navy-900 p-6 rounded-2xl border border-slate-800 flex items-center space-x-4">
+                        <div class="bg-emerald-500/10 p-3.5 rounded-xl text-emerald-400 border border-emerald-400/20">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Alunos Matriculados</p>
+                            <h3 class="text-2xl font-black text-white mt-0.5" id="creator-students-count">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Creator Courses List -->
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold text-white font-heading">Seus Cursos Publicados</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="creator-courses-grid">
+                        <!-- Creator Courses -->
+                    </div>
+                    <div id="creator-empty" class="text-center py-16 hidden bg-navy-900 rounded-2xl border border-slate-800">
+                        <i data-lucide="sparkles" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
+                        <h3 class="text-lg font-bold text-white">Sua vitrine de cursos está vazia</h3>
+                        <p class="text-xs text-slate-400 mb-4">Clique no botão acima para cadastrar e publicar seu primeiro curso na CoursesLink.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Auth Modal -->
+        <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-navy-900 border border-slate-800 rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-6">
+                <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+                
+                <div class="text-center space-y-2">
+                    <div class="inline-flex bg-amber-500/10 border border-amber-400/20 text-amber-400 p-3 rounded-2xl mb-1">
+                        <i data-lucide="link" class="w-7 h-7"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-white font-heading">CoursesLink</h2>
+                    <p class="text-xs text-slate-400">Acesse sua conta ou cadastre-se para iniciar</p>
+                </div>
+
+                <!-- Auth Tabs -->
+                <div class="flex rounded-xl bg-slate-800/80 p-1 border border-slate-700/60">
+                    <button onclick="switchAuthTab('login')" id="tab-login" class="flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all">Entrar</button>
+                    <button onclick="switchAuthTab('register')" id="tab-register" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Cadastrar</button>
+                </div>
+
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">E-mail</label>
+                        <input type="email" id="auth-email" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="seu@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Senha</label>
+                        <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="••••••••">
+                    </div>
+
+                    <!-- Role Selector (Only for Register) -->
+                    <div id="role-selection-container" class="hidden space-y-2 pt-1">
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Perfil de Acesso</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="cursor-pointer border border-slate-700 rounded-xl p-3 flex flex-col items-center text-center hover:border-amber-400 transition-all has-[:checked]:border-amber-400 has-[:checked]:bg-amber-500/10">
+                                <input type="radio" name="role" value="student" checked class="sr-only">
+                                <i data-lucide="book-open" class="w-5 h-5 text-amber-400 mb-1"></i>
+                                <span class="text-xs font-bold text-white">Aluno</span>
+                                <span class="text-[10px] text-slate-400">Quero aprender</span>
+                            </label>
+                            <label class="cursor-pointer border border-slate-700 rounded-xl p-3 flex flex-col items-center text-center hover:border-amber-400 transition-all has-[:checked]:border-amber-400 has-[:checked]:bg-amber-500/10">
+                                <input type="radio" name="role" value="creator" class="sr-only">
+                                <i data-lucide="video" class="w-5 h-5 text-amber-400 mb-1"></i>
+                                <span class="text-xs font-bold text-white">Criador</span>
+                                <span class="text-[10px] text-slate-400">Quero ensinar</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="auth-error" class="text-rose-400 text-xs hidden bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl"></div>
+
+                    <button type="submit" id="auth-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all text-xs uppercase tracking-wider">
+                        Entrar na Plataforma
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Course Creation Modal -->
+        <div id="create-course-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-navy-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-white font-heading">Criar Novo Curso no CoursesLink</h3>
+                    <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white p-1">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <form id="create-course-form" onsubmit="handleCreateCourse(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título do Curso</label>
+                        <input type="text" id="course-title" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="Ex: Preparatório Intensivo de Programação">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Categoria / Trilha</label>
+                        <select id="course-category" class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm">
+                            <option value="Carreiras de TI">Carreiras de TI</option>
+                            <option value="Concursos & Provas">Concursos & Provas</option>
+                            <option value="Inteligência Artificial">Inteligência Artificial</option>
+                            <option value="Negócios & Gestão">Negócios & Gestão</option>
+                            <option value="Idiomas">Idiomas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Investimento (R$)</label>
+                        <input type="number" step="0.01" min="0" id="course-price" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="149.90">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Descrição do Conteúdo</label>
+                        <textarea id="course-description" rows="3" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="Descreva os tópicos e a metodologia aplicada..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="closeCreateModal()" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800">Cancelar</button>
+                        <button type="submit" id="create-submit-btn" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 text-xs font-bold uppercase tracking-wider shadow-lg shadow-amber-500/10">Publicar Curso</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Course Details Modal -->
+        <div id="course-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-navy-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span id="modal-course-category" class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/20 text-amber-300 uppercase tracking-wider border border-amber-400/30">Categoria</span>
+                        <h3 id="modal-course-title" class="text-xl font-bold text-white mt-2 font-heading">Título do Curso</h3>
+                    </div>
+                    <button onclick="closeCourseModal()" class="text-slate-400 hover:text-white p-1">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Sobre esta Trilha</h4>
+                        <p id="modal-course-description" class="text-sm text-slate-300 leading-relaxed"></p>
+                    </div>
+                    <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Instrutor Responsável</span>
+                            <span id="modal-course-creator" class="text-sm font-semibold text-white">Professor CoursesLink</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">Investimento</span>
+                            <span id="modal-course-price" class="text-base font-extrabold text-amber-400">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeCourseModal()" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800">Fechar</button>
+                    <button type="button" id="modal-action-btn" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 text-xs font-bold uppercase tracking-wider shadow-lg shadow-amber-500/10">Matricular-se</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast notification -->
+        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-white border border-slate-700 px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs">
+            <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+            <span id="toast-message">Notificação CoursesLink</span>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-navy-950 border-t border-slate-800 py-8 text-center text-xs text-slate-400">
+            <div class="max-w-7xl mx-auto px-4 space-y-2">
+                <p class="font-semibold text-slate-300">CoursesLink &copy; 2026</p>
+                <p class="text-[11px] text-slate-400">A plataforma ideal para conectar conhecimento, professores e alunos.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'courseslink-app';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+        let userRole = 'student'; 
+        let courses = [];
+        let enrollments = [];
+        let authMode = 'login';
+
+        const loadingView = document.getElementById('loading-view');
+        const landingView = document.getElementById('landing-view');
+        const studentDashboard = document.getElementById('student-dashboard');
+        const creatorDashboard = document.getElementById('creator-dashboard');
+        const userBadge = document.getElementById('user-badge');
+        const navLoginBtn = document.getElementById('nav-login-btn');
+        const navLogoutBtn = document.getElementById('nav-logout-btn');
+        const navUserEmail = document.getElementById('nav-user-email');
+        const navUserRole = document.getElementById('nav-user-role');
+        const authModal = document.getElementById('auth-modal');
+        const authEmailInput = document.getElementById('auth-email');
+        const authPasswordInput = document.getElementById('auth-password');
+        const authError = document.getElementById('auth-error');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const roleSelectionContainer = document.getElementById('role-selection-container');
+        const tabLoginBtn = document.getElementById('tab-login');
+        const tabRegisterBtn = document.getElementById('tab-register');
+
+        function updateIcons() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        window.showToast = function(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastMessage.textContent = message;
+            if(type === 'success') {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.className = 'w-5 h-5 text-emerald-400';
+            } else {
+                toastIcon.setAttribute('data-lucide', 'alert-circle');
+                toastIcon.className = 'w-5 h-5 text-rose-400';
+            }
+            updateIcons();
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        window.onload = async function() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                }
+            } catch (err) {
+                console.error("Auth init warning:", err);
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                loadingView.classList.add('hidden');
+                
+                if (user && !user.isAnonymous) {
+                    await fetchUserProfile(user.uid);
+                    userBadge.classList.remove('hidden');
+                    navLogoutBtn.classList.remove('hidden');
+                    navLoginBtn.classList.add('hidden');
+                    landingView.classList.add('hidden');
+                } else {
+                    userBadge.classList.add('hidden');
+                    navLogoutBtn.classList.add('hidden');
+                    navLoginBtn.classList.remove('hidden');
+                    landingView.classList.remove('hidden');
+                    studentDashboard.classList.add('hidden');
+                    creatorDashboard.classList.add('hidden');
+                    initPublicRealtimeListeners();
+                }
+                updateIcons();
+            });
+        };
+
+        async function fetchUserProfile(uid) {
+            try {
+                const profileRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'data');
+                const profileSnap = await getDoc(profileRef);
+                
+                if (profileSnap.exists()) {
+                    userRole = profileSnap.data().role || 'student';
+                } else {
+                    userRole = 'student';
+                    await setDoc(profileRef, { role: 'student', email: currentUser.email || 'Aluno CoursesLink' });
+                }
+                
+                navUserEmail.textContent = currentUser.email || 'Usuário CoursesLink';
+                navUserRole.textContent = userRole === 'creator' ? 'Criador' : 'Aluno';
+
+                initRealtimeListeners();
+
+                if (userRole === 'creator') {
+                    creatorDashboard.classList.remove('hidden');
+                    studentDashboard.classList.add('hidden');
+                } else {
+                    studentDashboard.classList.remove('hidden');
+                    creatorDashboard.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Profile error:", error);
+                showToast("Erro ao carregar perfil do portal.", "error");
+            }
+        }
+
+        window.openAuthModal = function(mode) {
+            switchAuthTab(mode);
+            authModal.classList.remove('hidden');
+        };
+
+        window.closeAuthModal = function() {
+            authModal.classList.add('hidden');
+            document.getElementById('auth-form').reset();
+            authError.classList.add('hidden');
+        };
+
+        window.switchAuthTab = function(mode) {
+            authMode = mode;
+            authError.classList.add('hidden');
+            if (mode === 'login') {
+                tabLoginBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
+                tabRegisterBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                roleSelectionContainer.classList.add('hidden');
+                authSubmitBtn.textContent = "Entrar no Portal";
+            } else {
+                tabRegisterBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
+                tabLoginBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                roleSelectionContainer.classList.remove('hidden');
+                authSubmitBtn.textContent = "Cadastrar no CoursesLink";
+            }
+        };
+
+        window.handleAuthSubmit = async function(event) {
+            event.preventDefault();
+            const email = authEmailInput.value;
+            const password = authPasswordInput.value;
+            authError.classList.add('hidden');
+            authSubmitBtn.disabled = true;
+
+            try {
+                if (authMode === 'login') {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showToast("Login efetuado com sucesso!");
+                } else {
+                    const selectedRole = document.querySelector('input[name="role"]:checked').value;
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    const profileRef = doc(db, 'artifacts', appId, 'users', cred.user.uid, 'profile', 'data');
+                    await setDoc(profileRef, { role: selectedRole, email: email });
+                    showToast("Conta criada no CoursesLink!");
+                }
+                closeAuthModal();
+            } catch (error) {
+                authError.textContent = getFriendlyAuthError(error.code);
+                authError.classList.remove('hidden');
+            } finally {
+                authSubmitBtn.disabled = false;
+            }
+        };
+
+        function getFriendlyAuthError(code) {
+            switch(code) {
+                case 'auth/invalid-email': return 'E-mail em formato inválido.';
+                case 'auth/user-not-found': return 'Usuário não cadastrado.';
+                case 'auth/wrong-password': return 'Senha incorreta.';
+                case 'auth/email-already-in-use': return 'Este e-mail já possui conta.';
+                case 'auth/weak-password': return 'Mínimo de 6 caracteres na senha.';
+                default: return 'Falha na verificação. Tente novamente.';
+            }
+        }
+
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+                window.location.reload();
+            } catch (err) {
+                console.error("Logout error:", err);
+            }
+        };
+
+        function initPublicRealtimeListeners() {
+            const coursesQuery = collection(db, 'artifacts', appId, 'public', 'data', 'courses');
+            onSnapshot(coursesQuery, (snapshot) => {
+                courses = [];
+                snapshot.forEach((docSnap) => {
+                    courses.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderPublicCourses();
+            });
+        }
+
+        function initRealtimeListeners() {
+            if (!currentUser) return;
+
+            const coursesQuery = collection(db, 'artifacts', appId, 'public', 'data', 'courses');
+            onSnapshot(coursesQuery, (snapshot) => {
+                courses = [];
+                snapshot.forEach((docSnap) => {
+                    courses.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderDashboards();
+            });
+
+            const enrollmentsQuery = collection(db, 'artifacts', appId, 'public', 'data', 'enrollments');
+            onSnapshot(enrollmentsQuery, (snapshot) => {
+                enrollments = [];
+                snapshot.forEach((docSnap) => {
+                    enrollments.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderDashboards();
+            });
+        }
+
+        function renderPublicCourses() {
+            const publicGrid = document.getElementById('public-courses-grid');
+            if(!publicGrid) return;
+            publicGrid.innerHTML = '';
+
+            if (courses.length === 0) {
+                publicGrid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-500 text-xs">Ainda não existem cursos cadastrados. Crie sua conta como Criador para estrear esta seção!</div>`;
+                return;
+            }
+
+            courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-400/50 transition-all";
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/10 text-amber-400 uppercase tracking-wider border border-amber-400/20">${escapeHTML(course.category)}</span>
+                        <h3 class="text-lg font-bold text-white font-heading">${escapeHTML(course.title)}</h3>
+                        <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-base font-extrabold text-amber-400">R$ ${Number(course.price).toFixed(2)}</span>
+                        <button onclick="openAuthModal('login')" class="text-xs font-bold text-white hover:text-amber-400 transition-colors">Acessar Curso &rarr;</button>
+                    </div>
+                `;
+                publicGrid.appendChild(card);
+            });
+        }
+
+        function renderDashboards() {
+            if (userRole === 'creator') {
+                renderCreatorDashboard();
+            } else {
+                renderStudentDashboard();
+            }
+            updateIcons();
+        }
+
+        function renderCreatorDashboard() {
+            const myCourses = courses.filter(c => c.creatorId === currentUser.uid);
+            document.getElementById('creator-courses-count').textContent = myCourses.length;
+
+            let totalStudents = 0;
+            myCourses.forEach(c => {
+                const count = enrollments.filter(e => e.courseId === c.id).length;
+                totalStudents += count;
+            });
+            document.getElementById('creator-students-count').textContent = totalStudents;
+
+            const grid = document.getElementById('creator-courses-grid');
+            const emptyState = document.getElementById('creator-empty');
+            grid.innerHTML = '';
+
+            if (myCourses.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            myCourses.forEach(course => {
+                const studentCount = enrollments.filter(e => e.courseId === course.id).length;
+                const card = document.createElement('div');
+                card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-400/40 transition-all";
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/10 text-amber-400 uppercase tracking-wider border border-amber-400/20">${escapeHTML(course.category)}</span>
+                            <span class="text-xs font-medium text-slate-400">${studentCount} alunos</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-heading">${escapeHTML(course.title)}</h3>
+                        <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-base font-extrabold text-amber-400">R$ ${Number(course.price).toFixed(2)}</span>
+                        <button onclick="deleteCourse('${course.id}')" class="text-rose-400 hover:text-rose-300 p-2 rounded-xl hover:bg-rose-500/10 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.switchStudentTab = function(tab) {
+            const browseTabBtn = document.getElementById('student-tab-browse');
+            const enrolledTabBtn = document.getElementById('student-tab-enrolled');
+            const browseSection = document.getElementById('student-browse-section');
+            const enrolledSection = document.getElementById('student-enrolled-section');
+
+            if (tab === 'browse') {
+                browseTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
+                enrolledTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                browseSection.classList.remove('hidden');
+                enrolledSection.classList.add('hidden');
+            } else {
+                enrolledTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
+                browseTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                enrolledSection.classList.remove('hidden');
+                browseSection.classList.add('hidden');
+            }
+            renderStudentDashboard();
+        };
+
+        function renderStudentDashboard() {
+            const browseGrid = document.getElementById('browse-courses-grid');
+            const browseEmpty = document.getElementById('browse-empty');
+            browseGrid.innerHTML = '';
+
+            if (courses.length === 0) {
+                browseEmpty.classList.remove('hidden');
+            } else {
+                browseEmpty.classList.add('hidden');
+                courses.forEach(course => {
+                    const isEnrolled = enrollments.some(e => e.courseId === course.id && e.studentId === currentUser.uid);
+                    const card = document.createElement('div');
+                    card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-400/40 transition-all cursor-pointer";
+                    card.onclick = () => openCourseModal(course.id);
+                    card.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/10 text-amber-400 uppercase tracking-wider border border-amber-400/20">${escapeHTML(course.category)}</span>
+                                <span class="text-[10px] text-slate-400 font-medium">${escapeHTML(course.creatorEmail || 'Instrutor')}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white font-heading">${escapeHTML(course.title)}</h3>
+                            <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
+                        </div>
+                        <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
+                            <span class="text-base font-extrabold text-amber-400">R$ ${Number(course.price).toFixed(2)}</span>
+                            <span class="text-[10px] font-bold px-3 py-1.5 rounded-xl ${isEnrolled ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500 text-navy-950 uppercase'}">
+                                ${isEnrolled ? 'Matriculado' : 'Ver Detalhes'}
+                            </span>
+                        </div>
+                    `;
+                    browseGrid.appendChild(card);
+                });
+            }
+
+            const enrolledGrid = document.getElementById('enrolled-courses-grid');
+            const enrolledEmpty = document.getElementById('enrolled-empty');
+            enrolledGrid.innerHTML = '';
+
+            const myEnrolledCourseIds = enrollments.filter(e => e.studentId === currentUser.uid).map(e => e.courseId);
+            const myEnrolledCourses = courses.filter(c => myEnrolledCourseIds.includes(c.id));
+
+            if (myEnrolledCourses.length === 0) {
+                enrolledEmpty.classList.remove('hidden');
+            } else {
+                enrolledEmpty.classList.add('hidden');
+                myEnrolledCourses.forEach(course => {
+                    const card = document.createElement('div');
+                    card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-emerald-500/40 transition-all cursor-pointer";
+                    card.onclick = () => openCourseModal(course.id);
+                    card.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 uppercase tracking-wider border border-emerald-500/30">Em Andamento</span>
+                                <span class="text-xs font-semibold text-amber-400">${escapeHTML(course.category)}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white font-heading">${escapeHTML(course.title)}</h3>
+                            <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
+                        </div>
+                        <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">CoursesLink Digital</span>
+                            <span class="text-xs font-bold text-amber-400 flex items-center space-x-1">
+                                <span>Acessar Material</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </span>
+                        </div>
+                    `;
+                    enrolledGrid.appendChild(card);
+                });
+            }
+        }
+
+        window.openCreateModal = function() {
+            document.getElementById('create-course-modal').classList.remove('hidden');
+        };
+
+        window.closeCreateModal = function() {
+            document.getElementById('create-course-modal').classList.add('hidden');
+            document.getElementById('create-course-form').reset();
+        };
+
+        window.handleCreateCourse = async function(event) {
+            event.preventDefault();
+            if (!currentUser || userRole !== 'creator') return;
+
+            const title = document.getElementById('course-title').value;
+            const category = document.getElementById('course-category').value;
+            const price = parseFloat(document.getElementById('course-price').value);
+            const description = document.getElementById('course-description').value;
+            const submitBtn = document.getElementById('create-submit-btn');
+
+            submitBtn.disabled = true;
+
+            try {
+                const coursesRef = collection(db, 'artifacts', appId, 'public', 'data', 'courses');
+                await addDoc(coursesRef, {
+                    title,
+                    category,
+                    price,
+                    description,
+                    creatorId: currentUser.uid,
+                    creatorEmail: currentUser.email,
+                    createdAt: new Date().toISOString()
+                });
+                showToast("Curso publicado na plataforma!");
+                closeCreateModal();
+            } catch (error) {
+                console.error("Error creating course:", error);
+                showToast("Erro ao cadastrar curso.", "error");
+            } finally {
+                submitBtn.disabled = false;
+            }
+        };
+
+        window.deleteCourse = async function(courseId) {
+            try {
+                const courseDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses', courseId);
+                await deleteDoc(courseDocRef);
+                showToast("Curso removido.");
+            } catch (error) {
+                console.error("Error deleting course:", error);
+                showToast("Erro ao excluir o curso.", "error");
+            }
+        };
+
+        window.openCourseModal = function(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            document.getElementById('modal-course-category').textContent = course.category;
+            document.getElementById('modal-course-title').textContent = course.title;
+            document.getElementById('modal-course-description').textContent = course.description;
+            document.getElementById('modal-course-creator').textContent = course.creatorEmail || 'Instrutor CoursesLink';
+            document.getElementById('modal-course-price').textContent = `R$ ${Number(course.price).toFixed(2)}`;
+
+            const actionBtn = document.getElementById('modal-action-btn');
+            const isEnrolled = enrollments.some(e => e.courseId === course.id && e.studentId === currentUser.uid);
+
+            if (userRole === 'creator') {
+                actionBtn.textContent = "Visão do Instrutor";
+                actionBtn.disabled = true;
+                actionBtn.className = "px-6 py-2.5 rounded-xl bg-slate-800 text-slate-500 text-xs font-bold cursor-not-allowed";
+            } else if (isEnrolled) {
+                actionBtn.textContent = "Continuar Estudos";
+                actionBtn.disabled = false;
+                actionBtn.className = "px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold uppercase tracking-wider";
+                actionBtn.onclick = () => {
+                    showToast("Iniciando ambiente de estudos...");
+                    closeCourseModal();
+                };
+            } else {
+                actionBtn.textContent = "Matricular-se Agora";
+                actionBtn.disabled = false;
+                actionBtn.className = "px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 text-xs font-bold uppercase tracking-wider shadow-lg shadow-amber-500/10";
+                actionBtn.onclick = () => enrollInCourse(course.id);
+            }
+
+            document.getElementById('course-modal').classList.remove('hidden');
+        };
+
+        window.closeCourseModal = function() {
+            document.getElementById('course-modal').classList.add('hidden');
+        };
+
+        async function enrollInCourse(courseId) {
+            if (!currentUser) return;
+            try {
+                const enrollmentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'enrollments');
+                await addDoc(enrollmentsRef, {
+                    courseId,
+                    studentId: currentUser.uid,
+                    studentEmail: currentUser.email,
+                    enrolledAt: new Date().toISOString()
+                });
+                showToast("Matrícula realizada com sucesso!");
+                closeCourseModal();
+                switchStudentTab('enrolled');
+            } catch (error) {
+                console.error("Error enrolling:", error);
+                showToast("Erro ao solicitar matrícula.", "error");
+            }
+        }
+
+        window.navigateToHome = function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.scrollToSection = function(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>

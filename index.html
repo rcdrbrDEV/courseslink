@@ -1,942 +1,1298 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoursesLink - Plataforma de Cursos e Trilhas de Aprendizado</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        navy: {
-                            50: '#f0f4f8',
-                            100: '#d9e2ec',
-                            800: '#102a43',
-                            900: '#0b1b2b',
-                            950: '#060e18'
-                        },
-                        amber: {
-                            400: '#fbbf24',
-                            500: '#f59e0b',
-                            600: '#d97706'
-                        }
-                    }
-                }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Store | Marketplace Gamer</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gg: {
+              bg: '#0D1117',
+              card: '#161B22',
+              cardHover: '#1C2128',
+              border: '#30363D',
+              borderHover: '#8B949E',
+              accent: '#238636', // Green primary like GGMax
+              accentHover: '#2EA043',
+              blue: '#58A6FF',
+              textPrimary: '#F0F6FC',
+              textSecondary: '#8B949E',
+              danger: '#DA3633'
             }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
         }
-    </script>
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Sora:wght@400;600;700;800&display=swap');
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; 
-        }
-        
-        h1, h2, h3, .font-heading { 
-            font-family: 'Sora', 'Plus Jakarta Sans', sans-serif; 
-        }
-    </style>
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0D1117;
+      color: #F0F6FC;
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0D1117;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #30363D;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #8B949E;
+    }
+    @keyframes toastIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes toastOut {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-20px); opacity: 0; }
+    }
+    .animate-toast-in { animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-toast-out { animation: toastOut 0.2s ease-in forwards; }
+  </style>
 </head>
-<body class="h-full bg-slate-900 text-slate-100 antialiased flex flex-col justify-between">
+<body class="min-h-screen flex flex-col custom-scrollbar relative">
 
-    <div id="app" class="min-h-full flex flex-col">
-        
-        <!-- Navbar -->
-        <header id="navbar" class="bg-navy-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateToHome()">
-                    <div class="bg-gradient-to-tr from-amber-500 to-amber-300 text-navy-950 p-2.5 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/10 font-black">
-                        <i data-lucide="link" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <span class="text-xl font-extrabold tracking-tight text-white block leading-none">COURSESLINK</span>
-                        <span class="text-[10px] uppercase font-semibold text-amber-400 tracking-wider">Conectando Conhecimento</span>
-                    </div>
-                </div>
-                
-                <!-- Nav Action Buttons -->
-                <div class="flex items-center space-x-4">
-                    <div id="user-badge" class="hidden sm:flex items-center space-x-2 bg-slate-800/80 border border-slate-700/60 px-3.5 py-1.5 rounded-full text-xs font-medium text-slate-200">
-                        <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
-                        <span id="nav-user-email">aluno@courseslink.com</span>
-                        <span id="nav-user-role" class="ml-1 px-2 py-0.5 text-[10px] rounded-full bg-amber-400/20 text-amber-300 uppercase font-bold border border-amber-400/30">Aluno</span>
-                    </div>
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
 
-                    <button id="nav-login-btn" onclick="openAuthModal('login')" class="bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold px-5 py-2.5 rounded-xl transition-all shadow-md text-xs uppercase tracking-wider">
-                        Entrar no Portal
-                    </button>
+  <!-- HEADER / NAVBAR (GGMax Minimalist Style) -->
+  <header class="sticky top-0 z-40 bg-gg-card/95 backdrop-blur-md border-b border-gg-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Logo & Main Nav -->
+      <div class="flex items-center gap-6">
+        <a href="#" onclick="showSection('home')" class="flex items-center gap-2 group">
+          <div class="w-9 h-9 rounded-lg bg-gg-accent flex items-center justify-center font-extrabold text-lg text-white group-hover:bg-gg-accentHover transition-colors">
+            LS
+          </div>
+          <span class="font-extrabold text-xl tracking-tight text-white">
+            LINK<span class="text-gg-blue">STORE</span>
+          </span>
+        </a>
 
-                    <button id="nav-logout-btn" onclick="handleLogout()" class="hidden flex items-center space-x-1.5 text-slate-400 hover:text-rose-400 px-3 py-2 rounded-xl hover:bg-slate-800/60 transition-colors text-xs font-semibold">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
-                        <span class="hidden sm:inline">Sair</span>
-                    </button>
-                </div>
-            </div>
-        </header>
+        <nav class="hidden md:flex items-center gap-1 text-sm font-medium text-gg-textSecondary">
+          <button onclick="showSection('home')" class="px-3 py-2 rounded-md hover:text-white hover:bg-gg-bg transition-all">Explorar</button>
+          <button onclick="showSection('orders')" class="px-3 py-2 rounded-md hover:text-white hover:bg-gg-bg transition-all relative">
+            Minhas Compras / Vendas
+            <span id="ordersBadge" class="hidden absolute -top-1 -right-1 bg-gg-blue text-gg-bg text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+          </button>
+        </nav>
+      </div>
 
-        <main class="flex-grow flex flex-col">
-            
-            <!-- Loading Splash -->
-            <div id="loading-view" class="flex-grow flex items-center justify-center p-8 bg-navy-950">
-                <div class="text-center space-y-4">
-                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-amber-400 border-t-transparent"></div>
-                    <p class="text-slate-400 font-medium text-sm">Carregando plataforma CoursesLink...</p>
-                </div>
-            </div>
+      <!-- Search Bar -->
+      <div class="flex-1 max-w-md hidden sm:block">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gg-textSecondary text-xs"></i>
+          <input 
+            type="text" 
+            id="searchInput"
+            placeholder="Buscar por contas, robux, skins, jogos..." 
+            class="w-full bg-gg-bg border border-gg-border rounded-lg pl-9 pr-4 py-1.5 text-xs text-white placeholder-gg-textSecondary focus:outline-none focus:border-gg-blue transition-all"
+            onkeyup="filterProducts()"
+          >
+        </div>
+      </div>
 
-            <!-- Landing / Public Home View -->
-            <div id="landing-view" class="hidden flex-grow flex flex-col">
-                <!-- Hero Section -->
-                <section class="relative bg-gradient-to-b from-navy-900 via-navy-950 to-slate-900 border-b border-slate-800 py-20 lg:py-28 px-4 overflow-hidden">
-                    <div class="max-w-5xl mx-auto text-center space-y-8 relative z-10">
-                        <span class="inline-flex items-center space-x-2 bg-amber-400/10 border border-amber-400/30 text-amber-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">
-                            <i data-lucide="book-open-check" class="w-4 h-4"></i>
-                            <span>Aprender. Praticar. Avançar.</span>
-                        </span>
-                        
-                        <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight font-heading">
-                            Conectando você ao seu <span class="bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 bg-clip-text text-transparent">próximo nível.</span>
-                        </h1>
+      <!-- Header Actions -->
+      <div class="flex items-center gap-3" id="headerActions">
+        <!-- Injected dynamically via JS -->
+      </div>
+    </div>
+  </header>
 
-                        <p class="text-slate-300 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
-                            O **CoursesLink** conecta alunos a cursos práticos e instrutores a novas turmas. Tudo em um ambiente digital interativo para potencializar seu aprendizado.
-                        </p>
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                            <button onclick="openAuthModal('register')" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold px-8 py-4 rounded-xl shadow-lg shadow-amber-500/20 transition-all text-sm uppercase tracking-wider flex items-center justify-center space-x-2">
-                                <span>Criar Conta no CoursesLink</span>
-                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="scrollToSection('trilhas')" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-semibold px-8 py-4 rounded-xl transition-all text-sm">
-                                Conhecer Cursos Disponíveis
-                            </button>
-                        </div>
-                    </div>
-                </section>
+    <!-- HOME SECTION -->
+    <div id="sectionHome" class="space-y-6">
 
-                <!-- Study Areas / Tracks Section -->
-                <section id="trilhas" class="py-20 px-4 max-w-7xl mx-auto w-full space-y-12">
-                    <div class="text-center space-y-3">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-white">Encontre o caminho ideal para o seu objetivo</h2>
-                        <p class="text-slate-400 text-sm max-w-xl mx-auto">Explore as trilhas e cursos disponíveis na plataforma digital.</p>
-                    </div>
+      <!-- GAME SELECTION GRID / HEADER BAR -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between border-b border-gg-border pb-3">
+          <div class="flex items-center gap-3">
+            <h2 id="currentViewTitle" class="font-bold text-lg text-white">Explore por Jogo</h2>
+            <button id="btnResetGameFilter" onclick="selectGameFilter('all')" class="hidden text-xs text-gg-blue hover:underline font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-arrow-left text-[10px]"></i> Ver todos os jogos
+            </button>
+          </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="public-courses-grid">
-                        <!-- Public course cards render here -->
-                    </div>
-                </section>
-
-                <!-- 3 Steps Section -->
-                <section class="bg-slate-900/60 border-y border-slate-800 py-16 px-4">
-                    <div class="max-w-6xl mx-auto">
-                        <div class="text-center mb-12">
-                            <h2 class="text-2xl font-bold text-white">Do primeiro acesso à próxima conquista</h2>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div class="bg-navy-900 border border-slate-800 p-6 rounded-2xl space-y-3">
-                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 font-extrabold flex items-center justify-center border border-amber-400/20">1</div>
-                                <h3 class="text-lg font-bold text-white">Crie sua Conta</h3>
-                                <p class="text-slate-400 text-xs leading-relaxed">Cadastre-se na plataforma como Aluno para explorar matérias ou como Criador para publicar seus próprios treinamentos.</p>
-                            </div>
-                            <div class="bg-navy-900 border border-slate-800 p-6 rounded-2xl space-y-3">
-                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 font-extrabold flex items-center justify-center border border-amber-400/20">2</div>
-                                <h3 class="text-lg font-bold text-white">Escolha seu Curso</h3>
-                                <p class="text-slate-400 text-xs leading-relaxed">Navegue pelas áreas de tecnologia, concurso, negócios e idiomas, escolhendo as disciplinas do seu interesse.</p>
-                            </div>
-                            <div class="bg-navy-900 border border-slate-800 p-6 rounded-2xl space-y-3">
-                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 font-extrabold flex items-center justify-center border border-amber-400/20">3</div>
-                                <h3 class="text-lg font-bold text-white">Pratique e Evolua</h3>
-                                <p class="text-slate-400 text-xs leading-relaxed">Acesse o conteúdo exclusivo, faça simulações e acompanhe seu histórico de progresso em tempo real.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- FAQ Section (CoursesLink Styled) -->
-                <section class="py-16 px-4 max-w-4xl mx-auto w-full space-y-8">
-                    <div class="text-center">
-                        <h2 class="text-2xl font-bold text-white">Perguntas Frequentes</h2>
-                    </div>
-                    <div class="space-y-4">
-                        <details class="bg-navy-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300 cursor-pointer">
-                            <summary class="font-bold text-white">O que é o CoursesLink?</summary>
-                            <p class="mt-2 text-slate-400">É uma plataforma digital onde instrutores publicam treinamentos e alunos se maticulam para aprender novas habilidades.</p>
-                        </details>
-                        <details class="bg-navy-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300 cursor-pointer">
-                            <summary class="font-bold text-white">Posso criar meus próprios cursos?</summary>
-                            <p class="mt-2 text-slate-400">Sim! No momento do cadastro, escolha a opção "Criador" para gerenciar e publicar seus materiais no CoursesLink.</p>
-                        </details>
-                        <details class="bg-navy-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300 cursor-pointer">
-                            <summary class="font-bold text-white">Posso estudar pelo celular?</summary>
-                            <p class="mt-2 text-slate-400">Com certeza! A plataforma CoursesLink é 100% responsiva para celulares, tablets e computadores.</p>
-                        </details>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Student Dashboard View -->
-            <div id="student-dashboard" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full hidden">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Portal do Aluno</span>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Minha Área de Estudos</h1>
-                    </div>
-                    <!-- Student Tabs -->
-                    <div class="flex bg-slate-800/80 p-1.5 rounded-xl border border-slate-700/60 self-start">
-                        <button onclick="switchStudentTab('browse')" id="student-tab-browse" class="px-5 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all">Explorar Cursos</button>
-                        <button onclick="switchStudentTab('enrolled')" id="student-tab-enrolled" class="px-5 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Meus Cursos</button>
-                    </div>
-                </div>
-
-                <!-- Browse Section -->
-                <div id="student-browse-section" class="space-y-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="browse-courses-grid">
-                        <!-- Course Cards -->
-                    </div>
-                    <div id="browse-empty" class="text-center py-16 hidden bg-navy-900 rounded-2xl border border-slate-800">
-                        <i data-lucide="book-open" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
-                        <h3 class="text-lg font-bold text-white">Nenhum curso disponível</h3>
-                        <p class="text-xs text-slate-400 mt-1">Novos treinamentos serão publicados em breve por nossos instrutores.</p>
-                    </div>
-                </div>
-
-                <!-- Enrolled Section -->
-                <div id="student-enrolled-section" class="space-y-6 hidden">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="enrolled-courses-grid">
-                        <!-- Enrolled Courses -->
-                    </div>
-                    <div id="enrolled-empty" class="text-center py-16 hidden bg-navy-900 rounded-2xl border border-slate-800">
-                        <i data-lucide="award" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
-                        <h3 class="text-lg font-bold text-white">Você ainda não se matriculou</h3>
-                        <p class="text-xs text-slate-400 mt-1">Explore as trilhas na aba "Explorar Cursos" e comece hoje mesmo.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Creator Dashboard View -->
-            <div id="creator-dashboard" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full hidden">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                    <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Painel do Instrutor</span>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Gestão de Cursos - CoursesLink</h1>
-                    </div>
-                    <button onclick="openCreateModal()" class="inline-flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold px-5 py-3 rounded-xl shadow-lg shadow-amber-500/10 transition-all text-xs uppercase tracking-wider">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        <span>Criar Novo Curso</span>
-                    </button>
-                </div>
-
-                <!-- Stats Overview -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <div class="bg-navy-900 p-6 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                        <div class="bg-amber-500/10 p-3.5 rounded-xl text-amber-400 border border-amber-400/20">
-                            <i data-lucide="video" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cursos Publicados</p>
-                            <h3 class="text-2xl font-black text-white mt-0.5" id="creator-courses-count">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-navy-900 p-6 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                        <div class="bg-emerald-500/10 p-3.5 rounded-xl text-emerald-400 border border-emerald-400/20">
-                            <i data-lucide="users" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Alunos Matriculados</p>
-                            <h3 class="text-2xl font-black text-white mt-0.5" id="creator-students-count">0</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Creator Courses List -->
-                <div class="space-y-4">
-                    <h2 class="text-lg font-bold text-white">Seus Cursos Publicados</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="creator-courses-grid">
-                        <!-- Creator Courses -->
-                    </div>
-                    <div id="creator-empty" class="text-center py-16 hidden bg-navy-900 rounded-2xl border border-slate-800">
-                        <i data-lucide="sparkles" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
-                        <h3 class="text-lg font-bold text-white">Sua vitrine de cursos está vazia</h3>
-                        <p class="text-xs text-slate-400 mb-4">Clique no botão acima para cadastrar e publicar seu primeiro curso na plataforma Lumina.</p>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-
-        <!-- Auth Modal -->
-        <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-            <div class="bg-navy-900 border border-slate-800 rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-6">
-                <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-                
-                <div class="text-center space-y-2">
-                    <div class="inline-flex bg-amber-500/10 border border-amber-400/20 text-amber-400 p-3 rounded-2xl mb-1">
-                        <i data-lucide="link" class="w-7 h-7"></i>
-                    </div>
-                    <h2 class="text-2xl font-black text-white">CoursesLink</h2>
-                    <p class="text-xs text-slate-400">Acesse sua conta ou cadastre-se para iniciar</p>
-                </div>
-
-                <!-- Auth Tabs -->
-                <div class="flex rounded-xl bg-slate-800/80 p-1 border border-slate-700/60">
-                    <button onclick="switchAuthTab('login')" id="tab-login" class="flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all">Entrar</button>
-                    <button onclick="switchAuthTab('register')" id="tab-register" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Cadastrar</button>
-                </div>
-
-                <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">E-mail</label>
-                        <input type="email" id="auth-email" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="seu@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Senha</label>
-                        <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="••••••••">
-                    </div>
-
-                    <!-- Role Selector (Only for Register) -->
-                    <div id="role-selection-container" class="hidden space-y-2 pt-1">
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Perfil de Acesso</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="cursor-pointer border border-slate-700 rounded-xl p-3 flex flex-col items-center text-center hover:border-amber-400 transition-all has-[:checked]:border-amber-400 has-[:checked]:bg-amber-500/10">
-                                <input type="radio" name="role" value="student" checked class="sr-only">
-                                <i data-lucide="book-open" class="w-5 h-5 text-amber-400 mb-1"></i>
-                                <span class="text-xs font-bold text-white">Aluno</span>
-                                <span class="text-[10px] text-slate-400">Quero aprender</span>
-                            </label>
-                            <label class="cursor-pointer border border-slate-700 rounded-xl p-3 flex flex-col items-center text-center hover:border-amber-400 transition-all has-[:checked]:border-amber-400 has-[:checked]:bg-amber-500/10">
-                                <input type="radio" name="role" value="creator" class="sr-only">
-                                <i data-lucide="video" class="w-5 h-5 text-amber-400 mb-1"></i>
-                                <span class="text-xs font-bold text-white">Criador</span>
-                                <span class="text-[10px] text-slate-400">Quero ensinar</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div id="auth-error" class="text-rose-400 text-xs hidden bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl"></div>
-
-                    <button type="submit" id="auth-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all text-xs uppercase tracking-wider">
-                        Entrar na Plataforma
-                    </button>
-                </form>
-            </div>
+          <select id="sortSelect" onchange="filterProducts()" class="bg-gg-card border border-gg-border rounded-md px-3 py-1.5 text-xs text-gg-textSecondary focus:outline-none focus:border-gg-blue">
+            <option value="recent">Mais Recentes</option>
+            <option value="low-price">Menor Preço</option>
+            <option value="high-price">Maior Preço</option>
+          </select>
         </div>
 
-        <!-- Course Creation Modal -->
-        <div id="create-course-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-            <div class="bg-navy-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-white">Criar Novo Curso no CoursesLink</h3>
-                    <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white p-1">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                <form id="create-course-form" onsubmit="handleCreateCourse(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título do Curso</label>
-                        <input type="text" id="course-title" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="Ex: Preparatório Intensivo de Programação">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Categoria / Trilha</label>
-                        <select id="course-category" class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm">
-                            <option value="Carreiras de TI">Carreiras de TI</option>
-                            <option value="Concursos & Provas">Concursos & Provas</option>
-                            <option value="Inteligência Artificial">Inteligência Artificial</option>
-                            <option value="Negócios & Gestão">Negócios & Gestão</option>
-                            <option value="Idiomas">Idiomas</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Investimento (R$)</label>
-                        <input type="number" step="0.01" min="0" id="course-price" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="149.90">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Descrição do Conteúdo</label>
-                        <textarea id="course-description" rows="3" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm" placeholder="Descreva os tópicos e a metodologia aplicada..."></textarea>
-                    </div>
-                    <div class="flex justify-end space-x-3 pt-2">
-                        <button type="button" onclick="closeCreateModal()" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800">Cancelar</button>
-                        <button type="submit" id="create-submit-btn" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 text-xs font-bold uppercase tracking-wider shadow-lg shadow-amber-500/10">Publicar Curso</button>
-                    </div>
-                </form>
-            </div>
+        <!-- POPULAR GAMES BAR (GGMax Style Posters) -->
+        <div id="gamesGridBar" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
+          <!-- Rendered dynamically -->
         </div>
+      </div>
 
-        <!-- Course Details / Modal -->
-        <div id="course-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-            <div class="bg-navy-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <span id="modal-course-category" class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/20 text-amber-300 uppercase tracking-wider border border-amber-400/30">Categoria</span>
-                        <h3 id="modal-course-title" class="text-xl font-bold text-white mt-2">Título do Curso</h3>
-                    </div>
-                    <button onclick="closeCourseModal()" class="text-slate-400 hover:text-white p-1">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div>
-                        <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Sobre esta Trilha</h4>
-                        <p id="modal-course-description" class="text-sm text-slate-300 leading-relaxed"></p>
-                    </div>
-                    <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl flex items-center justify-between">
-                        <div>
-                            <span class="text-xs text-slate-400 block">Instrutor Responsável</span>
-                            <span id="modal-course-creator" class="text-sm font-semibold text-white">Professor Lumina</span>
-                        </div>
-                        <div>
-                            <span class="text-xs text-slate-400 block">Investimento</span>
-                            <span id="modal-course-price" class="text-base font-extrabold text-amber-400">R$ 0,00</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeCourseModal()" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800">Fechar</button>
-                    <button type="button" id="modal-action-btn" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 text-xs font-bold uppercase tracking-wider shadow-lg shadow-amber-500/10">Matricular-se</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Toast notification -->
-        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-white border border-slate-700 px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs">
-            <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
-            <span id="toast-message">Notificação CoursesLink</span>
-        </div>
-
-        <!-- Footer -->
-        <footer class="bg-navy-950 border-t border-slate-800 py-8 text-center text-xs text-slate-400">
-            <div class="max-w-7xl mx-auto px-4 space-y-2">
-                <p class="font-semibold text-slate-300">CoursesLink &copy; 2026</p>
-                <p class="text-[11px] text-slate-400">A plataforma ideal para conectar conhecimento, professores e alunos.</p>
-            </div>
-        </footer>
+      <!-- PRODUCTS GRID -->
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Products rendered here -->
+      </div>
     </div>
 
-    <!-- Firebase & Logic Integration -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- ORDERS / CHAT SECTION -->
+    <div id="sectionOrders" class="hidden space-y-6">
+      <div class="flex items-center justify-between border-b border-gg-border pb-4">
+        <div>
+          <h2 class="font-bold text-xl text-white">Minhas Compras & Vendas</h2>
+          <p class="text-xs text-gg-textSecondary">Acompanhe seus pedidos, mensagens e entregas automáticas</p>
+        </div>
+      </div>
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'courseslink-app';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Orders List -->
+        <div class="bg-gg-card border border-gg-border rounded-xl p-4 space-y-3 h-[600px] overflow-y-auto custom-scrollbar">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gg-textSecondary mb-2">Seus Pedidos</h3>
+          <div id="ordersList" class="space-y-2">
+            <!-- Dynamic order items -->
+          </div>
+        </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        <!-- Order Chat Box -->
+        <div class="lg:col-span-2 bg-gg-card border border-gg-border rounded-xl flex flex-col h-[600px]">
+          <div id="chatHeader" class="p-4 border-b border-gg-border flex items-center justify-between bg-gg-bg/50 rounded-t-xl">
+            <p class="text-xs text-gg-textSecondary">Selecione um pedido para abrir o chat de entrega</p>
+          </div>
 
-        let currentUser = null;
-        let userRole = 'student'; 
-        let courses = [];
-        let enrollments = [];
-        let authMode = 'login';
-        let activeStudentTab = 'browse';
-        let currentModalCourseId = null;
+          <!-- Chat Messages Area -->
+          <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar bg-gg-bg/30">
+            <div class="h-full flex flex-col items-center justify-center text-gg-textSecondary text-xs">
+              <i class="fa-regular fa-comments text-3xl mb-2 opacity-50"></i>
+              <span>Nenhuma conversa selecionada</span>
+            </div>
+          </div>
 
-        // UI Element References
-        const loadingView = document.getElementById('loading-view');
-        const landingView = document.getElementById('landing-view');
-        const studentDashboard = document.getElementById('student-dashboard');
-        const creatorDashboard = document.getElementById('creator-dashboard');
-        const userBadge = document.getElementById('user-badge');
-        const navLoginBtn = document.getElementById('nav-login-btn');
-        const navLogoutBtn = document.getElementById('nav-logout-btn');
-        const navUserEmail = document.getElementById('nav-user-email');
-        const navUserRole = document.getElementById('nav-user-role');
-        const authModal = document.getElementById('auth-modal');
-        const authForm = document.getElementById('auth-form');
-        const authEmailInput = document.getElementById('auth-email');
-        const authPasswordInput = document.getElementById('auth-password');
-        const authError = document.getElementById('auth-error');
-        const authSubmitBtn = document.getElementById('auth-submit-btn');
-        const roleSelectionContainer = document.getElementById('role-selection-container');
-        const tabLoginBtn = document.getElementById('tab-login');
-        const tabRegisterBtn = document.getElementById('tab-register');
+          <!-- Chat Input -->
+          <form id="chatForm" onsubmit="handleSendChatMessage(event)" class="p-3 border-t border-gg-border flex items-center gap-2 hidden">
+            <input type="text" id="chatInput" placeholder="Escreva uma mensagem..." class="flex-1 bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+            <button type="submit" class="bg-gg-accent hover:bg-gg-accentHover text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all">
+              Enviar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
 
-        function updateIcons() {
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }
+  </main>
 
-        window.showToast = function(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            const toastIcon = document.getElementById('toast-icon');
+  <!-- MODAL: ANUNCIAR (CREATE LISTING) -->
+  <div id="createModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm hidden p-4">
+    <div class="bg-gg-card border border-gg-border w-full max-w-2xl rounded-xl p-6 space-y-5 relative max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+      <button onclick="closeCreateModal()" class="absolute top-5 right-5 text-gg-textSecondary hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="border-b border-gg-border pb-3">
+        <h3 class="font-bold text-lg text-white">Criar Anúncio</h3>
+        <p class="text-xs text-gg-textSecondary">Preencha os dados abaixo para publicar na Link Store</p>
+      </div>
+
+      <form id="createListingForm" onsubmit="handleCreateListing(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gg-textSecondary uppercase mb-1">Título do Anúncio *</label>
+            <input type="text" id="listingTitle" required placeholder="Ex: Conta Valorant Imortal com Skin Prime" class="w-full bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gg-textSecondary uppercase mb-1">Selecione o Jogo *</label>
+            <select id="listingGame" required class="w-full bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+              <option value="Roblox">Roblox</option>
+              <option value="Valorant">Valorant</option>
+              <option value="League of Legends">League of Legends</option>
+              <option value="Counter-Strike 2">Counter-Strike 2</option>
+              <option value="Free Fire">Free Fire</option>
+              <option value="Fortnite">Fortnite</option>
+              <option value="GTA V">GTA V</option>
+              <option value="EA FC">EA FC</option>
+              <option value="Outro">Outro Jogo</option>
+            </select>
+          </div>
+
+          <!-- Sale Mode -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gg-textSecondary uppercase mb-1.5">Tipo de Venda</label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="flex items-center gap-2 p-2.5 bg-gg-bg border border-gg-border rounded-lg cursor-pointer hover:border-gg-borderHover">
+                <input type="radio" name="saleType" value="single" checked onchange="toggleSaleType('single')" class="text-gg-accent focus:ring-0">
+                <span class="text-xs font-medium text-white">Item Único</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 bg-gg-bg border border-gg-border rounded-lg cursor-pointer hover:border-gg-borderHover">
+                <input type="radio" name="saleType" value="multi" onchange="toggleSaleType('multi')" class="text-gg-accent focus:ring-0">
+                <span class="text-xs font-medium text-white">Múltiplas Opções</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Single Price -->
+          <div id="singlePriceContainer" class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gg-textSecondary uppercase mb-1">Preço (R$) *</label>
+            <input type="number" step="0.01" id="listingPrice" placeholder="0.00" class="w-full bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+          </div>
+
+          <!-- Multi Options -->
+          <div id="multiOptionsContainer" class="md:col-span-2 hidden space-y-3 bg-gg-bg/50 p-3.5 rounded-lg border border-gg-border">
+            <div class="flex items-center justify-between border-b border-gg-border pb-2">
+              <div>
+                <label class="text-xs font-bold text-white uppercase block">Variações do Produto & Tags de Estoque</label>
+                <span class="text-[10px] text-gg-textSecondary">Vincule cada variação a uma Tag de estoque para não misturar os itens!</span>
+              </div>
+              <button type="button" onclick="addOptionRow()" class="text-xs bg-gg-blue/10 text-gg-blue border border-gg-blue/30 px-2.5 py-1 rounded hover:bg-gg-blue/20 font-semibold transition-all">
+                <i class="fa-solid fa-plus text-[10px]"></i> Adicionar Opção
+              </button>
+            </div>
+            <div id="optionsList" class="space-y-3"></div>
+          </div>
+
+          <!-- Auto Delivery Section -->
+          <div class="md:col-span-2 space-y-3 bg-gg-bg/40 p-3.5 rounded-lg border border-gg-border">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="listingAutoDelivery" onchange="toggleAutoDeliveryPayload()" class="w-4 h-4 rounded border-gg-border text-gg-accent focus:ring-0 bg-gg-bg" checked>
+              <label for="listingAutoDelivery" class="text-xs text-white font-medium cursor-pointer">
+                Ativar Entrega Automática por Tags de Estoque
+              </label>
+            </div>
             
-            toastMessage.textContent = message;
-            if(type === 'success') {
-                toastIcon.setAttribute('data-lucide', 'check-circle');
-                toastIcon.className = 'w-5 h-5 text-emerald-400';
-            } else {
-                toastIcon.setAttribute('data-lucide', 'alert-circle');
-                toastIcon.className = 'w-5 h-5 text-rose-400';
-            }
-            updateIcons();
-            
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3500);
-        }
+            <div id="autoDeliveryPayloadContainer" class="space-y-3 pt-2">
+              <!-- Custom Stock Tag Box (For Single Mode) -->
+              <div id="singleTagStockBox" class="p-3 bg-gg-bg border border-gg-border rounded-lg space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-gg-blue uppercase">
+                    <i class="fa-solid fa-boxes-stacked mr-1"></i> Configurar Tag de Estoque & Mensagem (Venda Única)
+                  </span>
+                  <span class="text-[10px] text-gg-textSecondary">1 item sorteado por compra</span>
+                </div>
 
-        window.onload = async function() {
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                }
-            } catch (err) {
-                console.error("Auth init warning:", err);
-            }
-
-            onAuthStateChanged(auth, async (user) => {
-                currentUser = user;
-                loadingView.classList.add('hidden');
-                
-                if (user && !user.isAnonymous) {
-                    await fetchUserProfile(user.uid);
-                    userBadge.classList.remove('hidden');
-                    navLogoutBtn.classList.remove('hidden');
-                    navLoginBtn.classList.add('hidden');
-                    landingView.classList.add('hidden');
-                } else {
-                    userBadge.classList.add('hidden');
-                    navLogoutBtn.classList.add('hidden');
-                    navLoginBtn.classList.remove('hidden');
-                    landingView.classList.remove('hidden');
-                    studentDashboard.classList.add('hidden');
-                    creatorDashboard.classList.add('hidden');
-                    initPublicRealtimeListeners();
-                }
-                updateIcons();
-            });
-        };
-
-        async function fetchUserProfile(uid) {
-            try {
-                const profileRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'data');
-                const profileSnap = await getDoc(profileRef);
-                
-                if (profileSnap.exists()) {
-                    userRole = profileSnap.data().role || 'student';
-                } else {
-                    userRole = 'student';
-                    await setDoc(profileRef, { role: 'student', email: currentUser.email || 'Aluno CoursesLink' });
-                }
-                
-                navUserEmail.textContent = currentUser.email || 'Usuário CoursesLink';
-                navUserRole.textContent = userRole === 'creator' ? 'Criador' : 'Aluno';
-
-                initRealtimeListeners();
-
-                if (userRole === 'creator') {
-                    creatorDashboard.classList.remove('hidden');
-                    studentDashboard.classList.add('hidden');
-                } else {
-                    studentDashboard.classList.remove('hidden');
-                    creatorDashboard.classList.add('hidden');
-                }
-            } catch (error) {
-                console.error("Profile error:", error);
-                showToast("Erro ao carregar perfil do portal.", "error");
-            }
-        }
-
-        window.switchAuthTab = function(mode) {
-            authMode = mode;
-            authError.classList.add('hidden');
-            if (mode === 'login') {
-                tabLoginBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
-                tabRegisterBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
-                roleSelectionContainer.classList.add('hidden');
-                authSubmitBtn.textContent = "Entrar no Portal";
-            } else {
-                tabRegisterBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
-                tabLoginBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
-                roleSelectionContainer.classList.remove('hidden');
-                authSubmitBtn.textContent = "Cadastrar no CoursesLink";
-            }
-        };
-
-        window.handleAuthSubmit = async function(event) {
-            event.preventDefault();
-            const email = authEmailInput.value;
-            const password = authPasswordInput.value;
-            authError.classList.add('hidden');
-            authSubmitBtn.disabled = true;
-
-            try {
-                if (authMode === 'login') {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    showToast("Login efetuado com sucesso!");
-                } else {
-                    const selectedRole = document.querySelector('input[name="role"]:checked').value;
-                    const cred = await createUserWithEmailAndPassword(auth, email, password);
-                    const profileRef = doc(db, 'artifacts', appId, 'users', cred.user.uid, 'profile', 'data');
-                    await setDoc(profileRef, { role: selectedRole, email: email });
-                    showToast("Conta criada no CoursesLink!");
-                }
-                closeAuthModal();
-            } catch (error) {
-                authError.textContent = getFriendlyAuthError(error.code);
-                authError.classList.remove('hidden');
-            } finally {
-                authSubmitBtn.disabled = false;
-            }
-        };
-
-        function getFriendlyAuthError(code) {
-            switch(code) {
-                case 'auth/invalid-email': return 'E-mail em formato inválido.';
-                case 'auth/user-not-found': return 'Usuário não cadastrado.';
-                case 'auth/wrong-password': return 'Senha incorreta.';
-                case 'auth/email-already-in-use': return 'Este e-mail já possui conta.';
-                case 'auth/weak-password': return 'Mínimo de 6 caracteres na senha.';
-                default: return 'Falha na verificação. Tente novamente.';
-            }
-        }
-
-        window.handleLogout = async function() {
-            try {
-                await signOut(auth);
-                window.location.reload();
-            } catch (err) {
-                console.error("Logout error:", err);
-            }
-        };
-
-        function initPublicRealtimeListeners() {
-            const coursesQuery = collection(db, 'artifacts', appId, 'public', 'data', 'courses');
-            onSnapshot(coursesQuery, (snapshot) => {
-                courses = [];
-                snapshot.forEach((docSnap) => {
-                    courses.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderPublicCourses();
-            });
-        }
-
-        function initRealtimeListeners() {
-            if (!currentUser) return;
-
-            const coursesQuery = collection(db, 'artifacts', appId, 'public', 'data', 'courses');
-            onSnapshot(coursesQuery, (snapshot) => {
-                courses = [];
-                snapshot.forEach((docSnap) => {
-                    courses.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderDashboards();
-            });
-
-            const enrollmentsQuery = collection(db, 'artifacts', appId, 'public', 'data', 'enrollments');
-            onSnapshot(enrollmentsQuery, (snapshot) => {
-                enrollments = [];
-                snapshot.forEach((docSnap) => {
-                    enrollments.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderDashboards();
-            });
-        }
-
-        function renderPublicCourses() {
-            const publicGrid = document.getElementById('public-courses-grid');
-            if(!publicGrid) return;
-            publicGrid.innerHTML = '';
-
-            if (courses.length === 0) {
-                publicGrid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-500 text-xs">Ainda não existem cursos cadastrados. Crie sua conta como Criador para estrear esta seção!</div>`;
-                return;
-            }
-
-            courses.forEach(course => {
-                const card = document.createElement('div');
-                card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-400/50 transition-all";
-                card.innerHTML = `
-                    <div class="space-y-3">
-                        <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/10 text-amber-400 uppercase tracking-wider border border-amber-400/20">${escapeHTML(course.category)}</span>
-                        <h3 class="text-lg font-bold text-white">${escapeHTML(course.title)}</h3>
-                        <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div>
+                    <label class="block text-[10px] text-gg-textSecondary mb-1">Nome da Tag</label>
+                    <div class="flex items-center bg-gg-card border border-gg-border rounded px-2">
+                      <span class="text-gg-textSecondary text-xs">{</span>
+                      <input type="text" id="listingVarName" placeholder="item" value="item" class="w-full bg-transparent p-1.5 text-xs text-white focus:outline-none font-mono">
+                      <span class="text-gg-textSecondary text-xs">}</span>
                     </div>
-                    <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
-                        <span class="text-base font-extrabold text-amber-400">R$ ${Number(course.price).toFixed(2)}</span>
-                        <button onclick="openAuthModal('login')" class="text-xs font-bold text-white hover:text-amber-400 transition-colors">Acessar Curso &rarr;</button>
-                    </div>
-                `;
-                publicGrid.appendChild(card);
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-[10px] text-gg-textSecondary mb-1">Estoque da Tag (Um item por linha)</label>
+                    <textarea id="listingVarStock" rows="2" placeholder="conta1:senha123&#10;conta2:senha456&#10;conta3:senha789" class="w-full bg-gg-card border border-gg-border rounded p-2 text-xs text-white font-mono focus:outline-none focus:border-gg-blue custom-scrollbar"></textarea>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] text-gg-textSecondary mb-1">Mensagem de Entrega Automática (Use <code class="text-gg-blue font-mono">[tag]</code> ou <code class="text-gg-blue font-mono">{item}</code>)</label>
+                  <textarea id="listingSingleMsg" rows="2" placeholder="Obrigado pela compra! Segue seu item:&#10;&#10;[tag]" class="w-full bg-gg-card border border-gg-border rounded p-2 text-xs text-white font-mono focus:outline-none focus:border-gg-blue custom-scrollbar">Obrigado pela compra! Seguem seus dados de acesso:
+
+[tag]
+
+Caso precise de suporte, envie uma mensagem nesta conversa.</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image Upload File -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gg-textSecondary uppercase mb-1">Imagem do Anúncio *</label>
+            <input type="file" id="listingImageFile" accept="image/*" required onchange="previewUploadImage(event)" class="w-full bg-gg-bg border border-gg-border rounded-lg p-1.5 text-xs text-gg-textSecondary file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-gg-border file:text-white hover:file:bg-gg-borderHover">
+            <div id="imagePreviewBox" class="mt-2 hidden relative w-full h-36 rounded-lg overflow-hidden border border-gg-border">
+              <img id="imagePreview" src="" alt="Preview" class="w-full h-full object-cover">
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gg-textSecondary uppercase mb-1">Descrição do Anúncio *</label>
+            <textarea id="listingDescription" rows="3" required placeholder="Forneça os detalhes completos do seu anúncio..." class="w-full bg-gg-bg border border-gg-border rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-gg-blue custom-scrollbar"></textarea>
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2 border-t border-gg-border">
+          <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-gg-textSecondary hover:text-white hover:bg-gg-bg">Cancelar</button>
+          <button type="submit" class="bg-gg-accent hover:bg-gg-accentHover text-white font-semibold px-5 py-2 rounded-lg text-xs transition-all">Publicar Anúncio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DO PRODUTO & COMPRA -->
+  <div id="detailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="bg-gg-card border border-gg-border w-full max-w-3xl rounded-xl p-6 relative max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+      <button onclick="closeDetailsModal()" class="absolute top-5 right-5 text-gg-textSecondary hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div id="detailsContent" class="space-y-5"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: AUTHENTICATION (LOGIN / REGISTRAR) -->
+  <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="bg-gg-card border border-gg-border w-full max-w-sm rounded-xl p-6 space-y-4 relative shadow-2xl">
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-gg-textSecondary hover:text-white">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center">
+        <div class="w-10 h-10 rounded-lg bg-gg-accent flex items-center justify-center font-extrabold text-xl text-white mx-auto mb-2">
+          LS
+        </div>
+        <h3 id="authModalTitle" class="font-bold text-lg text-white">Acesse a Link Store</h3>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1 bg-gg-bg p-1 rounded-lg border border-gg-border">
+        <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="py-1.5 rounded text-xs font-semibold text-white bg-gg-card">Entrar</button>
+        <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="py-1.5 rounded text-xs font-semibold text-gg-textSecondary hover:text-white">Cadastrar</button>
+      </div>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-3">
+        <div id="registerNameGroup" class="hidden">
+          <label class="block text-[11px] font-semibold text-gg-textSecondary uppercase mb-1">Nome de Usuário</label>
+          <input type="text" id="authName" placeholder="Seu apelido" class="w-full bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-gg-textSecondary uppercase mb-1">E-mail</label>
+          <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-gg-textSecondary uppercase mb-1">Senha</label>
+          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="w-full bg-gg-accent hover:bg-gg-accentHover text-white font-bold py-2.5 rounded-lg text-xs transition-all uppercase tracking-wider mt-2">
+          Entrar na Conta
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-gg-card border-t border-gg-border mt-auto py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gg-textSecondary">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-gg-accent flex items-center justify-center font-black text-xs text-white">LS</div>
+        <span class="font-bold text-white">Link Store</span> — Marketplace Gamer Minimalista
+      </div>
+      <div>
+        &copy; 2026 Link Store. Todos os direitos reservados.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    // Supported Games Presets
+    const POPULAR_GAMES = [
+      { id: 'Roblox', name: 'Roblox', icon: 'fa-cubes', image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=400&q=80' },
+      { id: 'Valorant', name: 'Valorant', icon: 'fa-crosshairs', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80' },
+      { id: 'League of Legends', name: 'LoL', icon: 'fa-shield-halved', image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80' },
+      { id: 'Counter-Strike 2', name: 'CS2', icon: 'fa-gun', image: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=400&q=80' },
+      { id: 'Free Fire', name: 'Free Fire', icon: 'fa-fire', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=400&q=80' },
+      { id: 'Fortnite', name: 'Fortnite', icon: 'fa-gamepad', image: 'https://images.unsplash.com/photo-1589241062272-c0a000072dfa?auto=format&fit=crop&w=400&q=80' },
+      { id: 'GTA V', name: 'GTA V', icon: 'fa-car', image: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=400&q=80' },
+      { id: 'EA FC', name: 'EA FC', icon: 'fa-futbol', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=400&q=80' }
+    ];
+
+    let products = JSON.parse(localStorage.getItem('linkstore_products')) || [];
+    let orders = JSON.parse(localStorage.getItem('linkstore_orders')) || [];
+    let currentUser = JSON.parse(localStorage.getItem('linkstore_user')) || null;
+    let selectedActiveOrder = null;
+    let selectedGameFilter = 'all';
+    let uploadedImageBase64 = "";
+    let authMode = 'login';
+    let pendingCheckoutItem = null;
+
+    function saveData() {
+      localStorage.setItem('linkstore_products', JSON.stringify(products));
+      localStorage.setItem('linkstore_orders', JSON.stringify(orders));
+    }
+
+    // Toast Notification System
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const isSuccess = type === 'success';
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto flex items-start gap-3 p-3.5 rounded-lg border shadow-xl backdrop-blur-md animate-toast-in ${
+        isSuccess ? 'bg-gg-card/95 border-gg-accent text-white' : 'bg-gg-card/95 border-gg-danger text-white'
+      }`;
+
+      toast.innerHTML = `
+        <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+          isSuccess ? 'bg-gg-accent text-white' : 'bg-gg-danger text-white'
+        }">
+          <i class="fa-solid ${isSuccess ? 'fa-check' : 'fa-xmark'} text-xs"></i>
+        </div>
+        <div class="flex-1 pr-2">
+          <h4 class="text-xs font-bold ${isSuccess ? 'text-gg-accent' : 'text-gg-danger'}">${title}</h4>
+          <p class="text-[11px] text-gg-textSecondary leading-snug mt-0.5">${message}</p>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-gg-textSecondary hover:text-white text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.classList.remove('animate-toast-in');
+          toast.classList.add('animate-toast-out');
+          setTimeout(() => toast.remove(), 200);
+        }
+      }, 4000);
+    }
+
+    // Auth & Navigation Helpers
+    function updateHeaderAuth() {
+      const headerActions = document.getElementById('headerActions');
+      if (!headerActions) return;
+
+      if (currentUser) {
+        headerActions.innerHTML = `
+          <button onclick="openCreateModal()" class="bg-gg-accent hover:bg-gg-accentHover text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-plus text-[10px]"></i> Anunciar
+          </button>
+          <div class="flex items-center gap-2 pl-2 border-l border-gg-border">
+            <div class="w-7 h-7 rounded-full bg-gg-border flex items-center justify-center text-xs font-bold text-white uppercase">
+              ${currentUser.name.charAt(0)}
+            </div>
+            <span class="text-xs font-medium text-white hidden sm:inline">${currentUser.name}</span>
+            <button onclick="logout()" class="text-gg-textSecondary hover:text-gg-danger text-xs ml-1" title="Sair">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        `;
+      } else {
+        headerActions.innerHTML = `
+          <button onclick="openAuthModal('login')" class="text-xs text-gg-textSecondary hover:text-white px-3 py-1.5 font-medium transition-colors">
+            Entrar
+          </button>
+          <button onclick="openAuthModal('register')" class="bg-gg-accent hover:bg-gg-accentHover text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
+            Cadastrar
+          </button>
+        `;
+      }
+
+      updateOrdersBadge();
+    }
+
+    function updateOrdersBadge() {
+      const badge = document.getElementById('ordersBadge');
+      if (!badge) return;
+
+      if (!currentUser) {
+        badge.classList.add('hidden');
+        return;
+      }
+
+      const userOrdersCount = orders.filter(o => o.buyer === currentUser.name || o.seller === currentUser.name).length;
+      if (userOrdersCount > 0) {
+        badge.innerText = userOrdersCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function showSection(section) {
+      const home = document.getElementById('sectionHome');
+      const ordersSec = document.getElementById('sectionOrders');
+
+      if (section === 'orders') {
+        if (!currentUser) {
+          showToast('error', 'Login Necessário', 'Faça login para ver suas compras e vendas.');
+          openAuthModal('login');
+          return;
+        }
+        home.classList.add('hidden');
+        ordersSec.classList.remove('hidden');
+        renderOrdersList();
+      } else {
+        home.classList.remove('hidden');
+        ordersSec.classList.add('hidden');
+      }
+    }
+
+    function openAuthModal(mode = 'login') {
+      authMode = mode;
+      switchAuthTab(mode);
+      document.getElementById('authModal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+    }
+
+    function switchAuthTab(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tabLoginBtn');
+      const tabRegister = document.getElementById('tabRegisterBtn');
+      const regGroup = document.getElementById('registerNameGroup');
+      const submitBtn = document.getElementById('authSubmitBtn');
+
+      if (mode === 'login') {
+        tabLogin.className = 'py-1.5 rounded text-xs font-semibold text-white bg-gg-card';
+        tabRegister.className = 'py-1.5 rounded text-xs font-semibold text-gg-textSecondary hover:text-white';
+        regGroup.classList.add('hidden');
+        submitBtn.innerText = 'Entrar na Conta';
+      } else {
+        tabRegister.className = 'py-1.5 rounded text-xs font-semibold text-white bg-gg-card';
+        tabLogin.className = 'py-1.5 rounded text-xs font-semibold text-gg-textSecondary hover:text-white';
+        regGroup.classList.remove('hidden');
+        submitBtn.innerText = 'Criar Conta Nova';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value;
+
+      if (authMode === 'register') {
+        const name = document.getElementById('authName').value;
+        if (!name) {
+          showToast('error', 'Nome Obrigatório', 'Preencha seu nome de usuário.');
+          return;
+        }
+        currentUser = { name, email };
+        showToast('success', 'Bem-vindo!', `Conta criada com sucesso. Olá, ${name}!`);
+      } else {
+        const username = email.split('@')[0] || 'Usuario';
+        currentUser = { name: username, email };
+        showToast('success', 'Login Realizado', `Sessão iniciada como ${currentUser.name}.`);
+      }
+
+      localStorage.setItem('linkstore_user', JSON.stringify(currentUser));
+      updateHeaderAuth();
+      closeAuthModal();
+      document.getElementById('authForm').reset();
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('linkstore_user');
+      updateHeaderAuth();
+      showSection('home');
+      showToast('success', 'Sessão Encerrada', 'Você saiu da sua conta.');
+    }
+
+    function openCreateModal() {
+      if (!currentUser) {
+        showToast('error', 'Acesso Negado', 'Faça login para publicar um anúncio.');
+        openAuthModal('login');
+        return;
+      }
+      document.getElementById('createModal').classList.remove('hidden');
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.add('hidden');
+    }
+
+    function toggleSaleType(type) {
+      const singleContainer = document.getElementById('singlePriceContainer');
+      const multiContainer = document.getElementById('multiOptionsContainer');
+      const singleTagBox = document.getElementById('singleTagStockBox');
+
+      if (type === 'single') {
+        singleContainer.classList.remove('hidden');
+        multiContainer.classList.add('hidden');
+        if (singleTagBox) singleTagBox.classList.remove('hidden');
+      } else {
+        singleContainer.classList.add('hidden');
+        multiContainer.classList.remove('hidden');
+        if (singleTagBox) singleTagBox.classList.add('hidden');
+        if (document.querySelectorAll('#optionsList .option-row').length === 0) {
+          addOptionRow();
+        }
+      }
+    }
+
+    function addOptionRow() {
+      const list = document.getElementById('optionsList');
+      const rowId = 'opt_' + Math.random().toString(36).substring(2, 7);
+      const row = document.createElement('div');
+      row.className = 'p-3 bg-gg-bg border border-gg-border rounded-lg space-y-2.5 option-row';
+      row.dataset.rowId = rowId;
+
+      row.innerHTML = `
+        <div class="flex items-center gap-2">
+          <input type="text" placeholder="Nome da Opção (Ex: Conta Nível 30)" class="opt-title flex-1 bg-gg-card border border-gg-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-gg-blue">
+          <input type="number" step="0.01" placeholder="R$ 0.00" class="opt-price w-28 bg-gg-card border border-gg-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-gg-blue">
+          <button type="button" onclick="this.closest('.option-row').remove()" class="text-gg-danger hover:text-white text-xs p-1.5">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+        <div class="bg-gg-card/60 p-2.5 rounded border border-gg-border/60 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold text-gg-blue uppercase"><i class="fa-solid fa-tag mr-1"></i> Tag & Mensagem de Entrega</span>
+            <span class="text-[9px] text-gg-textSecondary">Defina o nome da tag, estoque e mensagem específica</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[10px] text-gg-textSecondary mb-1">Nome da Tag</label>
+              <div class="flex items-center bg-gg-bg border border-gg-border rounded px-2">
+                <span class="text-gg-textSecondary text-xs">[</span>
+                <input type="text" placeholder="ex: niv30" value="tag_${rowId}" class="opt-tag-name w-full bg-transparent p-1 text-xs text-white focus:outline-none font-mono">
+                <span class="text-gg-textSecondary text-xs">]</span>
+              </div>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-[10px] text-gg-textSecondary mb-1">Estoque da Tag (Um por linha)</label>
+              <textarea placeholder="Estoque da tag (Um por linha)&#10;user1:pass1&#10;user2:pass2" class="opt-tag-stock w-full bg-gg-bg border border-gg-border rounded p-1.5 text-xs text-white font-mono focus:outline-none focus:border-gg-blue custom-scrollbar" rows="2"></textarea>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] text-gg-textSecondary mb-1">Mensagem Automática da Opção (Use <code class="text-gg-blue font-mono">[tag]</code> ou <code class="text-gg-blue font-mono">{nome_da_tag}</code>)</label>
+            <textarea class="opt-msg w-full bg-gg-bg border border-gg-border rounded p-1.5 text-xs text-white font-mono focus:outline-none focus:border-gg-blue custom-scrollbar" rows="2" placeholder="Sua compra foi aprovada! Item: [tag]">Obrigado pela compra da opção! Segue seu item:
+
+[tag]
+
+Qualquer dúvida, fale conosco aqui no chat!</textarea>
+          </div>
+        </div>
+      `;
+      list.appendChild(row);
+    }
+
+    function toggleAutoDeliveryPayload() {
+      const checkbox = document.getElementById('listingAutoDelivery');
+      const container = document.getElementById('autoDeliveryPayloadContainer');
+      if (checkbox.checked) {
+        container.classList.remove('hidden');
+      } else {
+        container.classList.add('hidden');
+      }
+    }
+
+    function previewUploadImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        uploadedImageBase64 = event.target.result;
+        const box = document.getElementById('imagePreviewBox');
+        const img = document.getElementById('imagePreview');
+        img.src = uploadedImageBase64;
+        box.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Render Games Header Bar
+    function renderGamesBar() {
+      const container = document.getElementById('gamesGridBar');
+      if (!container) return;
+
+      container.innerHTML = POPULAR_GAMES.map(game => {
+        const isSelected = selectedGameFilter === game.id;
+        return `
+          <button onclick="selectGameFilter('${game.id}')" class="group relative rounded-lg overflow-hidden border ${isSelected ? 'border-gg-accent ring-2 ring-gg-accent/50' : 'border-gg-border hover:border-gg-blue'} transition-all h-20 flex flex-col justify-end p-2 bg-gg-card">
+            <img src="${game.image}" alt="${game.name}" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all">
+            <div class="absolute inset-0 bg-gradient-to-t from-gg-bg via-gg-bg/40 to-transparent"></div>
+            <div class="relative z-10 flex items-center gap-1.5">
+              <i class="fa-solid ${game.icon} text-[10px] text-gg-blue"></i>
+              <span class="text-xs font-bold text-white truncate">${game.name}</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectGameFilter(gameId) {
+      selectedGameFilter = gameId;
+      renderGamesBar();
+
+      const resetBtn = document.getElementById('btnResetGameFilter');
+      const title = document.getElementById('currentViewTitle');
+
+      if (gameId === 'all') {
+        resetBtn.classList.add('hidden');
+        title.innerText = "Explore por Jogo";
+      } else {
+        resetBtn.classList.remove('hidden');
+        title.innerText = `Anúncios para ${gameId}`;
+      }
+
+      filterProducts();
+    }
+
+    // Details Modal & Checkout
+    function openDetailsModal(productId) {
+      const item = products.find(p => p.id === productId);
+      if (!item) return;
+
+      const detailsContent = document.getElementById('detailsContent');
+      let minPrice = item.type === 'multi' ? Math.min(...item.options.map(o => o.price)) : item.price;
+
+      detailsContent.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <div class="relative h-60 bg-gg-bg rounded-lg overflow-hidden border border-gg-border">
+              <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover">
+              ${item.autoDelivery ? `
+                <span class="absolute top-2 left-2 bg-gg-accent text-white font-bold text-xs uppercase px-2.5 py-1 rounded flex items-center gap-1.5 shadow">
+                  <i class="fa-solid fa-bolt"></i> Entrega Automática
+                </span>
+              ` : ''}
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gg-bg rounded-lg border border-gg-border text-xs">
+              <div>
+                <span class="text-gg-textSecondary block">Vendedor</span>
+                <span class="font-bold text-white"><i class="fa-solid fa-user-check text-gg-blue mr-1"></i>${item.seller}</span>
+              </div>
+              <div class="text-right">
+                <span class="text-gg-textSecondary block">Reputação</span>
+                <span class="text-amber-400 font-bold">★ ${(item.sellerRating || 5.0).toFixed(1)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <span class="bg-gg-bg text-gg-blue text-xs font-semibold px-2.5 py-1 rounded border border-gg-border">${item.game}</span>
+              <h2 class="font-bold text-lg text-white leading-snug">${item.title}</h2>
+              <p class="text-xs text-gg-textSecondary leading-relaxed bg-gg-bg/50 p-3 rounded-lg border border-gg-border max-h-32 overflow-y-auto custom-scrollbar">
+                ${item.description}
+              </p>
+
+              ${item.type === 'multi' ? `
+                <div class="space-y-1.5">
+                  <label class="text-xs font-bold uppercase text-gg-textSecondary">Selecione uma Opção *</label>
+                  <select id="selectedOptionIdx" class="w-full bg-gg-bg border border-gg-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gg-blue">
+                    ${item.options.map((opt, i) => `<option value="${i}">${opt.name} — R$ ${opt.price.toFixed(2)}</option>`).join('')}
+                  </select>
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="pt-4 border-t border-gg-border flex items-center justify-between gap-4">
+              <div>
+                <span class="text-xs text-gg-textSecondary uppercase block">Total</span>
+                <span id="detailsTotalPrice" class="font-extrabold text-xl text-white">R$ ${minPrice.toFixed(2)}</span>
+              </div>
+              <button onclick="processPurchase(${item.id})" class="bg-gg-accent hover:bg-gg-accentHover text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2">
+                <i class="fa-solid fa-cart-shopping"></i> Comprar Agora
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Attach listener to update dynamic total price when option changes
+      const optSelect = document.getElementById('selectedOptionIdx');
+      if (optSelect) {
+        optSelect.addEventListener('change', (e) => {
+          const idx = parseInt(e.target.value);
+          if (item.options && item.options[idx]) {
+            document.getElementById('detailsTotalPrice').innerText = `R$ ${item.options[idx].price.toFixed(2)}`;
+          }
+        });
+      }
+
+      document.getElementById('detailsModal').classList.remove('hidden');
+    }
+
+    function closeDetailsModal() {
+      document.getElementById('detailsModal').classList.add('hidden');
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim().toLowerCase();
+      const password = document.getElementById('authPassword').value;
+
+      // Email domain validation rule (must end with valid real email providers)
+      const validEmailRegex = /^[a-zA-Z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud|live|aol|proto)\.(com|com\.br|net|org|br)$/i;
+
+      if (!validEmailRegex.test(email)) {
+        showToast('error', 'E-mail Inválido', 'Insira um e-mail válido real (ex: usuario@gmail.com, @hotmail.com, @outlook.com).');
+        return;
+      }
+
+      // Retrieve registered accounts list
+      let registeredUsers = JSON.parse(localStorage.getItem('linkstore_users_list')) || [];
+
+      if (authMode === 'register') {
+        const name = document.getElementById('authName').value.trim();
+        if (!name) {
+          showToast('error', 'Nome Obrigatório', 'Preencha seu nome de usuário.');
+          return;
+        }
+
+        // Check for duplicate username (case-insensitive)
+        const nameExists = registeredUsers.some(u => u.name.toLowerCase() === name.toLowerCase());
+        if (nameExists) {
+          showToast('error', 'Usuário Existente', 'Já existe uma conta cadastrada com este nome de usuário.');
+          return;
+        }
+
+        // Check for duplicate email
+        const emailExists = registeredUsers.some(u => u.email.toLowerCase() === email);
+        if (emailExists) {
+          showToast('error', 'E-mail Já Cadastrado', 'Este e-mail já está sendo usado por outra conta.');
+          return;
+        }
+
+        const newUser = { name, email, password };
+        registeredUsers.push(newUser);
+        localStorage.setItem('linkstore_users_list', JSON.stringify(registeredUsers));
+
+        currentUser = { name, email };
+        showToast('success', 'Bem-vindo!', `Conta criada com sucesso. Olá, ${name}!`);
+      } else {
+        // Login Flow Verification
+        const foundUser = registeredUsers.find(u => u.email.toLowerCase() === email && u.password === password);
+        if (!foundUser) {
+          // Fallback check if user list was empty/demo
+          const userByEmail = registeredUsers.find(u => u.email.toLowerCase() === email);
+          if (userByEmail) {
+            showToast('error', 'Senha Incorreta', 'A senha informada está incorreta.');
+            return;
+          } else {
+            // Allow initial demo login if no accounts exist yet
+            const username = email.split('@')[0] || 'Usuario';
+            currentUser = { name: username, email };
+            registeredUsers.push({ name: username, email, password });
+            localStorage.setItem('linkstore_users_list', JSON.stringify(registeredUsers));
+          }
+        } else {
+          currentUser = { name: foundUser.name, email: foundUser.email };
+        }
+
+        showToast('success', 'Login Realizado', `Sessão iniciada como ${currentUser.name}.`);
+      }
+
+      localStorage.setItem('linkstore_user', JSON.stringify(currentUser));
+      updateHeaderAuth();
+      closeAuthModal();
+      document.getElementById('authForm').reset();
+    }
+
+    function processPurchase(productId) {
+      if (!currentUser) {
+        showToast('error', 'Login Necessário', 'Faça login para realizar compras.');
+        openAuthModal('login');
+        return;
+      }
+
+      const item = products.find(p => p.id === productId);
+      if (!item) return;
+
+      if (item.seller === currentUser.name) {
+        showToast('error', 'Ação Inválida', 'Você não pode comprar seu próprio anúncio.');
+        return;
+      }
+
+      let selectedTitle = item.title;
+      let finalPrice = item.price;
+      let targetTag = item.stockVarName;
+      let stockPool = item.stockList;
+      let deliveredTextTemplate = item.autoPayload || '';
+      let selectedOptionObj = null;
+
+      if (item.type === 'multi') {
+        const optIdx = parseInt(document.getElementById('selectedOptionIdx').value);
+        selectedOptionObj = item.options[optIdx];
+        selectedTitle = `${item.title} (${selectedOptionObj.name})`;
+        finalPrice = selectedOptionObj.price;
+        targetTag = selectedOptionObj.tagName;
+        stockPool = selectedOptionObj.stockList;
+        deliveredTextTemplate = selectedOptionObj.autoMsg || item.autoPayload || 'Segues seu item:\n\n[tag]';
+      }
+
+      // Variable Replacement Logic & Stock Management
+      let deliveredText = deliveredTextTemplate;
+      
+      if (item.autoDelivery && targetTag && stockPool && stockPool.length > 0) {
+        // Pick random item from the SPECIFIC tag stock
+        const randomIndex = Math.floor(Math.random() * stockPool.length);
+        const selectedStockItem = stockPool[randomIndex];
+
+        // Replace generic [tag] tag or specific {tagName} / [tagName]
+        deliveredText = deliveredText.replace(/\[tag\]/gi, selectedStockItem);
+        deliveredText = deliveredText.replace(/\{tag\}/gi, selectedStockItem);
+        
+        const customTagBrackets = new RegExp(`\\[${targetTag}\\]`, 'gi');
+        const customTagCurly = new RegExp(`\\{${targetTag}\\}`, 'gi');
+        deliveredText = deliveredText.replace(customTagBrackets, selectedStockItem);
+        deliveredText = deliveredText.replace(customTagCurly, selectedStockItem);
+
+        // Fallback for generic {item} tag if present
+        deliveredText = deliveredText.replace(/\{item\}/gi, selectedStockItem);
+
+        // Remove item from stock to avoid duplicate sales
+        stockPool.splice(randomIndex, 1);
+        saveData();
+      } else if (item.autoDelivery) {
+        // Fallback if stock runs out
+        deliveredText = `⚡ Item Comprado: ${selectedTitle}\n\n[ESTOQUE DA TAG [${targetTag}] ESGOTADO - O vendedor enviará manualmente!]`;
+      }
+
+      const newOrder = {
+        id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        productId: item.id,
+        itemTitle: selectedTitle,
+        game: item.game,
+        price: finalPrice,
+        buyer: currentUser.name,
+        seller: item.seller,
+        autoDelivery: item.autoDelivery,
+        status: 'Concluído',
+        date: new Date().toLocaleString('pt-BR'),
+        messages: [
+          { sender: 'Sistema', text: `Pedido ${selectedTitle} iniciado com sucesso!`, time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }
+        ]
+      };
+
+      if (item.autoDelivery && deliveredText) {
+        newOrder.messages.push({
+          sender: 'ENTREGA AUTOMÁTICA',
+          text: `⚡ SEU PRODUTO FOI ENTREGUE:\n\n${deliveredText}`,
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        });
+      }
+
+      orders.unshift(newOrder);
+      saveData();
+      closeDetailsModal();
+      showToast('success', 'Compra Realizada!', 'Seu pedido foi registrado e o item da tag correspondente foi entregue.');
+      showSection('orders');
+      selectOrder(newOrder.id);
+    }
+
+    // Orders & Chat Rendering
+    function renderOrdersList() {
+      const list = document.getElementById('ordersList');
+      if (!list) return;
+
+      const userOrders = orders.filter(o => o.buyer === currentUser.name || o.seller === currentUser.name);
+
+      if (userOrders.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-10 text-gg-textSecondary text-xs">
+            Nenhum pedido encontrado.
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = userOrders.map(order => {
+        const isBuyer = order.buyer === currentUser.name;
+        const isSelected = selectedActiveOrder && selectedActiveOrder.id === order.id;
+
+        return `
+          <div onclick="selectOrder('${order.id}')" class="p-3 rounded-lg border ${isSelected ? 'border-gg-blue bg-gg-bg' : 'border-gg-border hover:border-gg-borderHover bg-gg-bg/50'} cursor-pointer transition-all space-y-1">
+            <div class="flex items-center justify-between text-[10px]">
+              <span class="font-bold text-gg-blue">${order.id}</span>
+              <span class="bg-gg-accent/20 text-gg-accent font-semibold px-1.5 py-0.5 rounded">${order.status}</span>
+            </div>
+            <h4 class="font-bold text-xs text-white truncate">${order.itemTitle}</h4>
+            <div class="flex items-center justify-between text-[10px] text-gg-textSecondary pt-1">
+              <span>${isBuyer ? 'Vendedor: ' + order.seller : 'Comprador: ' + order.buyer}</span>
+              <span class="font-extrabold text-white">R$ ${order.price.toFixed(2)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectOrder(orderId) {
+      selectedActiveOrder = orders.find(o => o.id === orderId);
+      renderOrdersList();
+      renderChat();
+    }
+
+    function renderChat() {
+      const header = document.getElementById('chatHeader');
+      const messagesBox = document.getElementById('chatMessages');
+      const form = document.getElementById('chatForm');
+
+      if (!selectedActiveOrder) {
+        header.innerHTML = `<p class="text-xs text-gg-textSecondary">Selecione um pedido para abrir o chat de entrega</p>`;
+        messagesBox.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-gg-textSecondary text-xs">
+            <i class="fa-regular fa-comments text-3xl mb-2 opacity-50"></i>
+            <span>Nenhuma conversa selecionada</span>
+          </div>
+        `;
+        form.classList.add('hidden');
+        return;
+      }
+
+      header.innerHTML = `
+        <div class="flex items-center justify-between w-full">
+          <div>
+            <h4 class="font-bold text-xs text-white">${selectedActiveOrder.itemTitle}</h4>
+            <span class="text-[10px] text-gg-textSecondary">Pedido ${selectedActiveOrder.id} • R$ ${selectedActiveOrder.price.toFixed(2)}</span>
+          </div>
+          <span class="bg-gg-accent/20 text-gg-accent font-bold text-[10px] px-2 py-0.5 rounded">
+            ${selectedActiveOrder.status}
+          </span>
+        </div>
+      `;
+
+      messagesBox.innerHTML = selectedActiveOrder.messages.map(msg => {
+        const isMe = msg.sender === currentUser.name;
+        const isSystem = msg.sender === 'Sistema' || msg.sender === 'ENTREGA AUTOMÁTICA';
+
+        if (isSystem) {
+          return `
+            <div class="p-3 rounded-lg bg-gg-bg border border-gg-blue/30 text-xs text-gg-textSecondary space-y-1">
+              <div class="flex items-center justify-between text-[10px] font-bold text-gg-blue">
+                <span><i class="fa-solid fa-robot mr-1"></i>${msg.sender}</span>
+                <span>${msg.time}</span>
+              </div>
+              <div class="whitespace-pre-wrap font-mono text-white text-[11px]">${msg.text}</div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+            <span class="text-[9px] text-gg-textSecondary mb-0.5">${msg.sender} • ${msg.time}</span>
+            <div class="px-3 py-2 rounded-lg text-xs max-w-sm ${isMe ? 'bg-gg-accent text-white' : 'bg-gg-bg border border-gg-border text-white'}">
+              ${msg.text}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      form.classList.remove('hidden');
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    function handleSendChatMessage(e) {
+      e.preventDefault();
+      if (!selectedActiveOrder) return;
+
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      selectedActiveOrder.messages.push({
+        sender: currentUser.name,
+        text: text,
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      });
+
+      saveData();
+      renderChat();
+      input.value = '';
+    }
+
+    // Render Products Grid
+    function renderProducts(items) {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 text-center text-gg-textSecondary bg-gg-card border border-gg-border rounded-xl p-8 space-y-3">
+            <div class="w-16 h-16 bg-gg-bg rounded-full flex items-center justify-center mx-auto border border-gg-border text-gg-blue text-2xl">
+              <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">${selectedGameFilter === 'all' ? 'Nenhum anúncio publicado ainda' : 'Nenhum anúncio para ' + selectedGameFilter}</h3>
+            <p class="text-xs text-gg-textSecondary max-w-sm mx-auto">
+              ${selectedGameFilter === 'all' ? 'A Link Store está pronta para receber seus anúncios reais!' : 'Seja o primeiro a publicar um anúncio para este jogo.'}
+            </p>
+            <button onclick="openCreateModal()" class="mt-2 bg-gg-accent hover:bg-gg-accentHover text-white font-bold px-5 py-2.5 rounded-lg text-xs transition-all inline-flex items-center gap-2">
+              <i class="fa-solid fa-plus"></i> Criar Anúncio
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(item => {
+        const minPrice = item.type === 'multi' ? Math.min(...item.options.map(o => o.price)) : item.price;
+
+        const card = document.createElement('div');
+        card.className = "bg-gg-card border border-gg-border rounded-xl overflow-hidden hover:border-gg-borderHover transition-all flex flex-col justify-between group cursor-pointer";
+        card.onclick = () => openDetailsModal(item.id);
+
+        card.innerHTML = `
+          <div>
+            <div class="relative h-40 bg-gg-bg overflow-hidden">
+              <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              ${item.autoDelivery ? `
+                <span class="absolute top-2 left-2 bg-gg-accent text-white font-bold text-[10px] uppercase px-2 py-0.5 rounded flex items-center gap-1 shadow">
+                  <i class="fa-solid fa-bolt text-[9px]"></i> Automático
+                </span>
+              ` : ''}
+              <span class="absolute top-2 right-2 bg-gg-bg/80 text-gg-textSecondary text-[10px] px-2 py-0.5 rounded border border-gg-border font-medium backdrop-blur-sm">
+                ${item.game}
+              </span>
+            </div>
+
+            <div class="p-3.5 space-y-2">
+              <div class="flex items-center justify-between text-[11px] text-gg-textSecondary">
+                <span class="font-medium text-gg-blue"><i class="fa-solid fa-user-check mr-1"></i>${item.seller}</span>
+                <span class="text-amber-400">★ ${(item.sellerRating || 5.0).toFixed(1)}</span>
+              </div>
+
+              <h3 class="font-medium text-xs text-white line-clamp-2 leading-snug group-hover:text-gg-blue transition-colors">
+                ${item.title}
+              </h3>
+            </div>
+          </div>
+
+          <div class="p-3.5 pt-0 flex items-center justify-between border-t border-gg-border/40 mt-2">
+            <div>
+              <span class="text-[10px] text-gg-textSecondary block uppercase font-semibold">${item.type === 'multi' ? 'A partir de' : 'Preço'}</span>
+              <span class="font-extrabold text-sm text-white">R$ ${minPrice.toFixed(2)}</span>
+            </div>
+            <button class="bg-gg-bg border border-gg-border text-gg-textSecondary group-hover:text-white group-hover:border-gg-blue px-3 py-1.5 rounded text-xs font-semibold transition-all">
+              Ver
+            </button>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function filterProducts() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const sort = document.getElementById('sortSelect').value;
+
+      let filtered = products.filter(p => {
+        const matchesGame = selectedGameFilter === 'all' || p.game === selectedGameFilter;
+        const matchesSearch = p.title.toLowerCase().includes(search) || p.game.toLowerCase().includes(search);
+        return matchesGame && matchesSearch;
+      });
+
+      const getPrice = p => p.type === 'multi' ? Math.min(...p.options.map(o => o.price)) : p.price;
+
+      if (sort === 'low-price') filtered.sort((a, b) => getPrice(a) - getPrice(b));
+      else if (sort === 'high-price') filtered.sort((a, b) => getPrice(b) - getPrice(a));
+      else filtered.sort((a, b) => b.id - a.id);
+
+      renderProducts(filtered);
+    }
+
+    function handleCreateListing(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const saleType = document.querySelector('input[name="saleType"]:checked').value;
+      const isAutoDelivery = document.getElementById('listingAutoDelivery').checked;
+
+      let price = 0;
+      let optionsArr = [];
+      let defaultVarName = "";
+      let defaultStockList = [];
+      let defaultSingleMsg = "";
+
+      if (saleType === 'single') {
+        price = parseFloat(document.getElementById('listingPrice').value);
+        defaultVarName = document.getElementById('listingVarName').value.trim().replace(/[\[\]{}]/g, '');
+        defaultSingleMsg = document.getElementById('listingSingleMsg').value;
+        const varStockText = document.getElementById('listingVarStock').value;
+        defaultStockList = varStockText.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+
+        if (isNaN(price) || price <= 0) {
+          showToast('error', 'Preço Inválido', 'Insira um preço válido.');
+          return;
+        }
+      } else {
+        const optionRows = document.querySelectorAll('#optionsList .option-row');
+        optionRows.forEach(row => {
+          const titleVal = row.querySelector('.opt-title').value;
+          const priceVal = parseFloat(row.querySelector('.opt-price').value);
+          const tagNameVal = row.querySelector('.opt-tag-name').value.trim().replace(/[\[\]{}]/g, '');
+          const stockTextVal = row.querySelector('.opt-tag-stock').value;
+          const optMsgVal = row.querySelector('.opt-msg').value;
+          const optStockList = stockTextVal.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+
+          if (titleVal && !isNaN(priceVal) && priceVal > 0) {
+            optionsArr.push({
+              name: titleVal,
+              price: priceVal,
+              tagName: tagNameVal || 'item',
+              stockList: optStockList,
+              autoMsg: optMsgVal
             });
+          }
+        });
+
+        if (optionsArr.length === 0) {
+          showToast('error', 'Variações Obrigatórias', 'Adicione pelo menos uma opção com nome, preço, estoque e mensagem.');
+          return;
         }
+      }
 
-        function renderDashboards() {
-            if (userRole === 'creator') {
-                renderCreatorDashboard();
-            } else {
-                renderStudentDashboard();
-            }
-            updateIcons();
-        }
+      if (!uploadedImageBase64) {
+        showToast('error', 'Imagem Faltando', 'Faça upload da imagem do produto.');
+        return;
+      }
 
-        function renderCreatorDashboard() {
-            const myCourses = courses.filter(c => c.creatorId === currentUser.uid);
-            document.getElementById('creator-courses-count').textContent = myCourses.length;
+      const newListing = {
+        id: Date.now(),
+        title: document.getElementById('listingTitle').value,
+        game: document.getElementById('listingGame').value,
+        category: 'Geral',
+        type: saleType,
+        price: price,
+        options: optionsArr,
+        autoDelivery: isAutoDelivery,
+        autoPayload: isAutoDelivery ? defaultSingleMsg : '',
+        stockVarName: defaultVarName,
+        stockList: defaultStockList,
+        seller: currentUser.name,
+        sellerRating: 5.0,
+        image: uploadedImageBase64,
+        description: document.getElementById('listingDescription').value
+      };
 
-            let totalStudents = 0;
-            myCourses.forEach(c => {
-                const count = enrollments.filter(e => e.courseId === c.id).length;
-                totalStudents += count;
-            });
-            document.getElementById('creator-students-count').textContent = totalStudents;
+      products.unshift(newListing);
+      saveData();
+      filterProducts();
+      closeCreateModal();
 
-            const grid = document.getElementById('creator-courses-grid');
-            const emptyState = document.getElementById('creator-empty');
-            grid.innerHTML = '';
+      document.getElementById('createListingForm').reset();
+      document.getElementById('imagePreviewBox').classList.add('hidden');
+      document.getElementById('optionsList').innerHTML = '';
+      uploadedImageBase64 = "";
 
-            if (myCourses.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            emptyState.classList.add('hidden');
+      showToast('success', 'Anúncio Publicado!', 'Seu produto foi cadastrado com sucesso.');
+    }
 
-            myCourses.forEach(course => {
-                const studentCount = enrollments.filter(e => e.courseId === course.id).length;
-                const card = document.createElement('div');
-                card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-400/40 transition-all";
-                card.innerHTML = `
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/10 text-amber-400 uppercase tracking-wider border border-amber-400/20">${escapeHTML(course.category)}</span>
-                            <span class="text-xs font-medium text-slate-400">${studentCount} alunos</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-white">${escapeHTML(course.title)}</h3>
-                        <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
-                    </div>
-                    <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
-                        <span class="text-base font-extrabold text-amber-400">R$ ${Number(course.price).toFixed(2)}</span>
-                        <button onclick="deleteCourse('${course.id}')" class="text-rose-400 hover:text-rose-300 p-2 rounded-xl hover:bg-rose-500/10 transition-colors">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        window.switchStudentTab = function(tab) {
-            activeStudentTab = tab;
-            const browseTabBtn = document.getElementById('student-tab-browse');
-            const enrolledTabBtn = document.getElementById('student-tab-enrolled');
-            const browseSection = document.getElementById('student-browse-section');
-            const enrolledSection = document.getElementById('student-enrolled-section');
-
-            if (tab === 'browse') {
-                browseTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
-                enrolledTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
-                browseSection.classList.remove('hidden');
-                enrolledSection.classList.add('hidden');
-            } else {
-                enrolledTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg bg-amber-500 text-navy-950 shadow-sm transition-all";
-                browseTabBtn.className = "px-5 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
-                enrolledSection.classList.remove('hidden');
-                browseSection.classList.add('hidden');
-            }
-            renderStudentDashboard();
-        };
-
-        function renderStudentDashboard() {
-            const browseGrid = document.getElementById('browse-courses-grid');
-            const browseEmpty = document.getElementById('browse-empty');
-            browseGrid.innerHTML = '';
-
-            if (courses.length === 0) {
-                browseEmpty.classList.remove('hidden');
-            } else {
-                browseEmpty.classList.add('hidden');
-                courses.forEach(course => {
-                    const isEnrolled = enrollments.some(e => e.courseId === course.id && e.studentId === currentUser.uid);
-                    const card = document.createElement('div');
-                    card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-400/40 transition-all cursor-pointer";
-                    card.onclick = () => openCourseModal(course.id);
-                    card.innerHTML = `
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-400/10 text-amber-400 uppercase tracking-wider border border-amber-400/20">${escapeHTML(course.category)}</span>
-                                <span class="text-[10px] text-slate-400 font-medium">${escapeHTML(course.creatorEmail || 'Instrutor')}</span>
-                            </div>
-                            <h3 class="text-lg font-bold text-white">${escapeHTML(course.title)}</h3>
-                            <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
-                        </div>
-                        <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
-                            <span class="text-base font-extrabold text-amber-400">R$ ${Number(course.price).toFixed(2)}</span>
-                            <span class="text-[10px] font-bold px-3 py-1.5 rounded-xl ${isEnrolled ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500 text-navy-950 uppercase'}">
-                                ${isEnrolled ? 'Matriculado' : 'Ver Detalhes'}
-                            </span>
-                        </div>
-                    `;
-                    browseGrid.appendChild(card);
-                });
-            }
-
-            const enrolledGrid = document.getElementById('enrolled-courses-grid');
-            const enrolledEmpty = document.getElementById('enrolled-empty');
-            enrolledGrid.innerHTML = '';
-
-            const myEnrolledCourseIds = enrollments.filter(e => e.studentId === currentUser.uid).map(e => e.courseId);
-            const myEnrolledCourses = courses.filter(c => myEnrolledCourseIds.includes(c.id));
-
-            if (myEnrolledCourses.length === 0) {
-                enrolledEmpty.classList.remove('hidden');
-            } else {
-                enrolledEmpty.classList.add('hidden');
-                myEnrolledCourses.forEach(course => {
-                    const card = document.createElement('div');
-                    card.className = "bg-navy-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-emerald-500/40 transition-all cursor-pointer";
-                    card.onclick = () => openCourseModal(course.id);
-                    card.innerHTML = `
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 uppercase tracking-wider border border-emerald-500/30">Em Andamento</span>
-                                <span class="text-xs font-semibold text-amber-400">${escapeHTML(course.category)}</span>
-                            </div>
-                            <h3 class="text-lg font-bold text-white">${escapeHTML(course.title)}</h3>
-                            <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(course.description)}</p>
-                        </div>
-                        <div class="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Lumina Digital</span>
-                            <span class="text-xs font-bold text-amber-400 flex items-center space-x-1">
-                                <span>Acessar Material</span>
-                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                            </span>
-                        </div>
-                    `;
-                    enrolledGrid.appendChild(card);
-                });
-            }
-        }
-
-        window.openCreateModal = function() {
-            document.getElementById('create-course-modal').classList.remove('hidden');
-        };
-
-        window.closeCreateModal = function() {
-            document.getElementById('create-course-modal').classList.add('hidden');
-            document.getElementById('create-course-form').reset();
-        };
-
-        window.handleCreateCourse = async function(event) {
-            event.preventDefault();
-            if (!currentUser || userRole !== 'creator') return;
-
-            const title = document.getElementById('course-title').value;
-            const category = document.getElementById('course-category').value;
-            const price = parseFloat(document.getElementById('course-price').value);
-            const description = document.getElementById('course-description').value;
-            const submitBtn = document.getElementById('create-submit-btn');
-
-            submitBtn.disabled = true;
-
-            try {
-                const coursesRef = collection(db, 'artifacts', appId, 'public', 'data', 'courses');
-                await addDoc(coursesRef, {
-                    title,
-                    category,
-                    price,
-                    description,
-                    creatorId: currentUser.uid,
-                    creatorEmail: currentUser.email,
-                    createdAt: new Date().toISOString()
-                });
-                showToast("Curso publicado na plataforma!");
-                closeCreateModal();
-            } catch (error) {
-                console.error("Error creating course:", error);
-                showToast("Erro ao cadastrar curso.", "error");
-            } finally {
-                submitBtn.disabled = false;
-            }
-        };
-
-        window.deleteCourse = async function(courseId) {
-            try {
-                const courseDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses', courseId);
-                await deleteDoc(courseDocRef);
-                showToast("Curso removido.");
-            } catch (error) {
-                console.error("Error deleting course:", error);
-                showToast("Erro ao excluir o curso.", "error");
-            }
-        };
-
-        window.openCourseModal = function(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            if (!course) return;
-            currentModalCourseId = courseId;
-
-            document.getElementById('modal-course-category').textContent = course.category;
-            document.getElementById('modal-course-title').textContent = course.title;
-            document.getElementById('modal-course-description').textContent = course.description;
-            document.getElementById('modal-course-creator').textContent = course.creatorEmail || 'Instrutor CoursesLink';
-            document.getElementById('modal-course-price').textContent = `R$ ${Number(course.price).toFixed(2)}`;
-
-            const actionBtn = document.getElementById('modal-action-btn');
-            const isEnrolled = enrollments.some(e => e.courseId === course.id && e.studentId === currentUser.uid);
-
-            if (userRole === 'creator') {
-                actionBtn.textContent = "Visão do Instrutor";
-                actionBtn.disabled = true;
-                actionBtn.className = "px-6 py-2.5 rounded-xl bg-slate-800 text-slate-500 text-xs font-bold cursor-not-allowed";
-            } else if (isEnrolled) {
-                actionBtn.textContent = "Continuar Estudos";
-                actionBtn.disabled = false;
-                actionBtn.className = "px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold uppercase tracking-wider";
-                actionBtn.onclick = () => {
-                    showToast("Iniciando ambiente de estudos...");
-                    closeCourseModal();
-                };
-            } else {
-                actionBtn.textContent = "Matricular-se Agora";
-                actionBtn.disabled = false;
-                actionBtn.className = "px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 text-xs font-bold uppercase tracking-wider shadow-lg shadow-amber-500/10";
-                actionBtn.onclick = () => enrollInCourse(course.id);
-            }
-
-            document.getElementById('course-modal').classList.remove('hidden');
-        };
-
-        window.closeCourseModal = function() {
-            document.getElementById('course-modal').classList.add('hidden');
-        };
-
-        async function enrollInCourse(courseId) {
-            if (!currentUser) return;
-            try {
-                const enrollmentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'enrollments');
-                await addDoc(enrollmentsRef, {
-                    courseId,
-                    studentId: currentUser.uid,
-                    studentEmail: currentUser.email,
-                    enrolledAt: new Date().toISOString()
-                });
-                showToast("Matrícula realizada com sucesso!");
-                closeCourseModal();
-                switchStudentTab('enrolled');
-            } catch (error) {
-                console.error("Error enrolling:", error);
-                showToast("Erro ao solicitar matrícula.", "error");
-            }
-        }
-
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-    </script>
+    window.onload = () => {
+      updateHeaderAuth();
+      renderGamesBar();
+      renderProducts(products);
+    };
+  </script>
 </body>
 </html>
